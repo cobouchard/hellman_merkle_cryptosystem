@@ -7,3 +7,8 @@ https://en.wikipedia.org/wiki/Merkle%E2%80%93Hellman_knapsack_cryptosystem
 ptit schéma pour comprendre, on peut en refaire un a la main 
 https://www.researchgate.net/figure/Merkle-Hellman-knapsack-cryptosystem-architecture_fig1_352938346
 
+échanges de clé
+https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
+
+
+http://tcs.rwth-aachen.de/lehre/Crypto/SS2013/downloads/vortraege/merkle-hellman-knapsack-based-public-key-method.pdf
