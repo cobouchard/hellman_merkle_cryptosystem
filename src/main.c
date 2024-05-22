@@ -17,15 +17,25 @@ void super_increasing_sequence(int n, int *sequence)
     int sum = sequence[0];
     for (int i = 1; i < n; i++)
     {
-        sequence[i] = sum + rand() % 10 + 1;
+        sequence[i] = sum + rand() % sequence[i - 1] + 1;
         sum += sequence[i];
     }
-
-    return sequence;
 }
 
 
 int main(int argc, char *argv[])
 {
-    printf("yo\n");
+    // test sequence 
+    int sequence[20];
+    super_increasing_sequence(20, sequence);
+    
+    for (int i = 0; i < 20; i++)
+        printf("%d /", sequence[i]);
+    printf("\n");
+
+    // la suite ressemble un peu a la suite de fibonacci 
+    // elle augmente en taille de façon expo
+    // donc pas sur de pouvoir choisir des tailles de blocs super grandes.
+
+    
 }
