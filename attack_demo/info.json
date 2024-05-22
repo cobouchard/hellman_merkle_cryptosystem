@@ -1,8 +1,14 @@
 {
   "alice_addr": "127.0.0.1",
   "alice_port": 5555,
+
   "bob_addr": "127.0.0.1",
   "bob_port": 6666,
+
   "charlie_addr": "127.0.0.1",
-  "charlie_port": 10000
+  "charlie_port": 10000,
+
+
+  "input_file": "message.txt",
+  "result_file": "result.txt"
 }

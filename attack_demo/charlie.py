@@ -8,11 +8,15 @@ Charlie will attack the message and find what Alice sent to Bob using Merkle-Hel
 """
 
 import json
+import socket
+import threading
+from subprocess import call
 
 alice_addr = 0
 bob_addr = 0
 charlie_addr = 0
 
+#reading addresses from a file
 
 with open("info.json") as json_file:
 	try:
@@ -30,11 +34,35 @@ with open("info.json") as json_file:
 		charlie_port = json_data['charlie_port']
 		charlie_addr = (charlie_addr_ip,charlie_port)
 
-		print(alice_addr)
-		print(bob_addr)
-		print(charlie_addr)
 	except Exception as e:
 		print("Coudln't open \"info.json\"")
 		raise e
 	
 
+def attack(data):
+	print("Attack")
+	print(data)
+	call(None) #this should call the compiled C to decipher
+	
+
+#starting an udp server to communicate
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(charlie_addr)
+data = None
+
+while True:
+	data, addr_client = sock.recvfrom(1024)
+	if data!=None:
+		
+		#we send the data to Bob/Alice as expected
+		if(addr_client==alice_addr):
+			print("Forwarding message to Bob")
+			sock.sendto(data, bob_addr)
+		elif(addr_client==bob_addr):
+			print("Forwarding message to Alice")
+		 	sock.sendto(data, alice_addr)
+
+		#but we also try do decipher it
+		thread = threading.Thread(target=attack, args=(data,))
+		thread.start()
