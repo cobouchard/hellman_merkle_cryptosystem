@@ -1,0 +1,9 @@
+MH cryptosystem based on subset sum problem -> special case of knapsack problem
+given a set of integers A and an integer c, find a subset of A which sums to c.
+
+dégouté en fait c'est super bien expliqué sur wikipedia anglais j'ai pas envie de tout c/c
+https://en.wikipedia.org/wiki/Merkle%E2%80%93Hellman_knapsack_cryptosystem
+
+ptit schéma pour comprendre, on peut en refaire un a la main 
+https://www.researchgate.net/figure/Merkle-Hellman-knapsack-cryptosystem-architecture_fig1_352938346
+
