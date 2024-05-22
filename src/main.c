@@ -1,5 +1,5 @@
 #include "main.h"
-// key generation
+
 static bool randomized = false;
 
 /* initialize a super increasing sequence of n integers 
@@ -26,6 +26,7 @@ bignumber super_increasing_sequence(int n, bignumber *sequence)
     return (rand() % 2 * sum + sum);
 }
 
+/* calculates pcgd between 2 integers */
 bignumber gcd(bignumber  a, bignumber  b)
 {
     while(b != 0)
@@ -74,6 +75,8 @@ int main(int argc, char *argv[])
     bignumber r = find_coprime(q, q/2);
     printf("r = %lld\n",r);
     printf("gcd = %lld\n",gcd(r,q));
+
+
     return 0;
 
 }
