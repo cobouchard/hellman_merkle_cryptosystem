@@ -1,5 +1,4 @@
 CFLAGS = -std=c11 -Wall -Wextra -pedantic -O2 -ggdb3
-CFLAGS += -I/usr/include/x86_64-linux-gnu
 CPPFLAGS = -I../include -DEBUG
 LDFLAGS += -L/usr/lib/x86_64-linux-gnu -lgmp 
 EXE = mhe
@@ -15,6 +14,9 @@ mhe : main.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o  $@ $^ $(LDFLAGS)
 
 main.o : main.c ../include/main.h 
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^
+
+gram.o : gram-schmidt.c ../include/gram-schmidt.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^
 
 clean : 

@@ -1,4 +1,5 @@
 #include "main.h"
+#include "gram-schmidt.h"
 
 static gmp_randstate_t state;
 static bool randomized = false;
