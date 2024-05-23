@@ -8,5 +8,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include <gmp.h>
+
 typedef unsigned long long bignumber;
+
 #endif /* HME_H*/
