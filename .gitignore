@@ -1,4 +1,7 @@
 *.o
+*.gch
 mhe
 src/mhe
-
+.idea/*
+Dockerfile
+docker_command.sh

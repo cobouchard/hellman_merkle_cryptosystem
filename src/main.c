@@ -1,6 +1,7 @@
 #include "main.h"
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+#include "gram-schmidt.h"
 
 static gmp_randstate_t state;
 static bool randomized = false;
@@ -147,4 +148,5 @@ int main(int argc, char *argv[])
         mpz_clears(sequence[i], pub_sequence[i], NULL);   
     
     return 0;
+
 }
