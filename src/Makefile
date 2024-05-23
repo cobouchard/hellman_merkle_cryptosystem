@@ -11,7 +11,7 @@ debug: main.o
 	$(CC) $(CFLAGS) -g3 $(CPPFLAGS) -o $(EXE) $^ $(LDFLAGS)
 
 mhe : main.o
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o  $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o  $@ $^ $(LDFLAGS) -lgmp
 
 main.o : main.c ../include/main.h 
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^

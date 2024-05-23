@@ -91,12 +91,10 @@ int main(int argc, char *argv[])
     
     for (int i = 0; i < 100; i++)
     {
-        mpf_out_str(stdout, 10, 1024, sequence[i]);
-        printf(" /");
+        gmp_printf ("%Zd /", sequence[i]);
     }
-    printf("\n q = ");
-    mpf_out_str(stdout, 10, 1024, q);
-    printf("\n");
+    gmp_printf("\n q = %Zd\n", q);
+
     
     // la suite ressemble un peu a la suite de fibonacci 
     // elle augmente en taille de façon expo
