@@ -3,21 +3,21 @@ CPPFLAGS = -I../include -DEBUG
 LDFLAGS += -L/usr/lib/x86_64-linux-gnu -lgmp 
 EXE = mhe
 
-all : mhe 
+all : $(EXE) 
 
-rebuild : clean mhe
+rebuild : clean all
 
-debug: main.o
-	$(CC) $(CFLAGS) -g3 $(CPPFLAGS) -o $(EXE) $^ $(LDFLAGS)
+debug : CFLAGS += -g3
+debug: $(EXE)
 
-mhe : main.o
+$(EXE) : main.o gram-schmidt.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o  $@ $^ $(LDFLAGS)
 
 main.o : main.c ../include/main.h 
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
-gram.o : gram-schmidt.c ../include/gram-schmidt.h
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^
+gram-schmidt.o : gram-schmidt.c ../include/gram-schmidt.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 clean : 
 	@rm -rf *.o $(EXE)
@@ -28,4 +28,4 @@ help :
 	@echo "  make clean\t\tRemove all files and outdated software"
 	@echo "  make help\t\tDisplay this help"
 	
-.PHONY : all clean help
+.PHONY : all clean help rebuild

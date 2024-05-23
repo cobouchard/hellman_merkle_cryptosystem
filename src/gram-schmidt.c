@@ -78,7 +78,7 @@ void print_vector(struct Vector* vector){
         if(i!=BASE_SIZE-1)
             gmp_printf("%Zd,", vector->coefficients[i]);
         else
-            gmp_printf("%Zd", vector->coefficients[i]);
+            gmp_printf("%Zd\n", vector->coefficients[i]);
     }
 }
 

@@ -92,61 +92,6 @@ void encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
 
 int main(int argc, char *argv[])
 {
-    if(!randomized)
-    {   
-        gmp_randinit_default(state);
-        randomized = true;
-        gmp_randseed_ui(state, time(NULL));
-    }
-
-    // private sequence
-
-    mpz_t sequence[MESSAGE_LENGTH];
-    for (int i = 0; i < MESSAGE_LENGTH; i++)
-        mpz_init2(sequence[i], 1024UL);
-
-    mpz_t q;
-    mpz_init2(q, 1024UL);
-    super_increasing_sequence(sequence, &q);
-    
-    for (int i = 0; i < 100; i++)
-        gmp_printf ("%Zd/ ", sequence[i]);
-    gmp_printf("\nq = %Zd\n", q);
-    
-    // r and public sequence computation 
-    mpz_t r;
-    mpz_init2(r, 1024UL);
-    find_coprime(q, r);
-    gmp_printf("r = %Zd\n", r);
-    
-    mpz_t pub_sequence[MESSAGE_LENGTH];
-    for (int i = 0; i < MESSAGE_LENGTH; i++)
-        mpz_init2(pub_sequence[i], 1024UL);
-
-    public_sequence(sequence, pub_sequence, q, r); 
-
-    printf("-------------------------------------\npublic key:\n");
-    for (int i = 0; i < 100; i++)
-        gmp_printf ("%Zd/ ", pub_sequence[i]);
-    printf("\n-------------------------------------\n");
-
-/* public key = pub_sequence
- * private (key = sequence, r, q) */
-
-    
-    char *message = "message";
-    char binary[MESSAGE_LENGTH];
-    str_to_binary(message, binary);
-    
-    mpz_t cipher;
-    mpz_init2(cipher, 1024UL);
-    encryption(pub_sequence, message, cipher);
-
-    
-    mpz_clears(q, r, NULL);
-    for (int i = 0; i < MESSAGE_LENGTH; i++)
-        mpz_clears(sequence[i], pub_sequence[i], NULL);   
-    
-    return 0;
+    test_gram_schmidt();
 
 }
