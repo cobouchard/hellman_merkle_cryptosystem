@@ -12,3 +12,8 @@ https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
 
 
 http://tcs.rwth-aachen.de/lehre/Crypto/SS2013/downloads/vortraege/merkle-hellman-knapsack-based-public-key-method.pdf
+
+
+
+https://mathweb.ucsd.edu/~crypto/Projects/JenniferBakker/Math187/
+trop bien pour l'attaque

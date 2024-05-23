@@ -9,12 +9,19 @@ struct Vector{
     mpf_t coefficients[BASE_SIZE];
 };
 
-void dot_product(struct Vector* a,struct Vector* b, mpf_t* result);
-void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj);
-void gram_schmidt(struct Vector* v[], struct Vector* u[], int number_of_vectors);
 void init_vector(struct Vector* vector);
 void clear_vector(struct Vector* v);
 void print_vector(struct Vector* vector);
+
+void nearest_integer(mpf_t* floaty, mpz_t* result);
+void norm2(struct Vector* vector, mpf_t* result);
+void dot_product(struct Vector* a,struct Vector* b, mpf_t* result);
+void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj);
+
+void gram_schmidt(struct Vector* v[], struct Vector* u[], int number_of_vectors);
+void lll(struct Vector* v[], int number_of_vectors);
+
+
 void test_gram_schmidt();
 
 #endif

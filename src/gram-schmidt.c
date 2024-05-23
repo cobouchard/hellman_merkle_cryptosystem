@@ -4,6 +4,39 @@
 #include "../include/gram-schmidt.h"
 #include "../include/main.h"
 
+void nearest_integer(mpf_t* floaty, mpz_t* result){
+    mpf_t floor, sub, temp;
+    mpf_init(floor); mpf_init(sub); mpf_init(temp);
+
+    mpf_floor(floor, *floaty);
+    mpf_sub(sub, *floaty, floor);
+
+    if(mpf_cmp_d(sub, 0.5)>0){ //sub>0.5
+        mpf_ceil(temp, *floaty);
+        mpz_set_f(*result, temp);
+    }
+    else{
+        mpz_set_f(*result, floor);
+    }
+
+    mpf_clear(sub);
+    mpf_clear(floor);
+}
+
+void norm2(struct Vector* vector, mpf_t* result){
+    mpf_t temp;
+    mpf_init(temp);
+
+    for(int i=0; i!=BASE_SIZE; i++){
+        mpf_pow_ui(temp, vector->coefficients[i], 2);
+        mpf_add(*result,*result,temp);
+    }
+
+    mpf_sqrt(*result, *result);
+
+    mpf_clear(temp);
+}
+
 void dot_product(struct Vector* a,struct Vector* b, mpf_t* result){
     mpf_t temp;
     mpf_init(temp);
