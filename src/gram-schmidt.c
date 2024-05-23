@@ -4,24 +4,18 @@
 #include "../include/gram-schmidt.h"
 #include "../include/main.h"
 
-mpz_t* dot_product(mpz_t* a[],mpz_t* b[]){
-    int size = sizeof(*a);
-    if(size != sizeof(*b)){
-        errx(EXIT_FAILURE, "a and b of two different sizes, cannot compute dot product\n");
-    }
-
+mpz_t* dot_product(struct Vector* a,struct Vector* b){
     mpz_t temp;
     mpz_t* product = (mpz_t*)malloc(sizeof(mpz_t));
     mpz_init2(temp, DEFAULT_SIZE);
     mpz_init2(*product, DEFAULT_SIZE);
 
-    for(int i=0; i!=size; i++){
-        mpz_mul(temp, *a[i], *b[i]);
+    for(int i=0; i!=a->size; i++){
+        mpz_mul(temp, a->coefficients[i], b->coefficients[i]);
         mpz_add(*product, *product, temp);
     }
 
     mpz_clear(temp);
-
     return product;
 }
 
