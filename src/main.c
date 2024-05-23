@@ -37,7 +37,6 @@ void super_increasing_sequence(int n, mpz_t *sequence, mpz_t *res)
 
     mpz_clear(temp);
     mpz_clear(sum);
-    return;
 }
 
 /* calculates pcgd between 2 integers */
@@ -108,4 +107,5 @@ int main(int argc, char *argv[])
     for (int i = 0; i < n; i++)
         mpz_clear(sequence[i]);
     return 0;
+
 }

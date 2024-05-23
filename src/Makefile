@@ -1,6 +1,7 @@
 CFLAGS = -std=c11 -Wall -Wextra -pedantic -O2 -ggdb3
+CFLAGS += -I/usr/include/x86_64-linux-gnu
 CPPFLAGS = -I../include -DEBUG
-LDFLAGS = 
+LDFLAGS += -L/usr/lib/x86_64-linux-gnu -lgmp 
 EXE = mhe
 
 all : mhe 
@@ -11,7 +12,7 @@ debug: main.o
 	$(CC) $(CFLAGS) -g3 $(CPPFLAGS) -o $(EXE) $^ $(LDFLAGS)
 
 mhe : main.o
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o  $@ $^ $(LDFLAGS) -lgmp
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o  $@ $^ $(LDFLAGS)
 
 main.o : main.c ../include/main.h 
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^
