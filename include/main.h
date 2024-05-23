@@ -8,8 +8,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include <string.h>
 #include <gmp.h>
 
+#define MESSAGE_LENGTH 100
 typedef unsigned long long bignumber;
 
 #endif /* HME_H*/

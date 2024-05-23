@@ -1,30 +1,26 @@
 #include "main.h"
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 static gmp_randstate_t state;
 static bool randomized = false;
 
 /* initialize a super increasing sequence of n integers 
- * and return q an integer > sum of all elements of the sequence */
-void super_increasing_sequence(int n, mpz_t *sequence, mpz_t *res)
+ * and return q an integer > sum of all elements of the sequence 
+ * sequence must be initialized before */
+void super_increasing_sequence(mpz_t *sequence, mpz_t *res)
 {
-    if (n <= 0)
+    if (MESSAGE_LENGTH <= 0)
         return ;
-
-    if(!randomized)
-    {   
-        gmp_randinit_default(state);
-        srand(time(NULL));
-        randomized = true;
-    }
     
     mpz_set_ui(sequence[0], rand()% 10 + 1);
 
     mpz_t sum;
     mpz_t temp;
-    mpz_init2(sum, 1024UL);
+    mpz_init_set(sum, sequence[0]);
     mpz_init2(temp, 1024UL);
 
-    for (int i = 1; i < n; i++)
+    for (int i = 1; i < MESSAGE_LENGTH; i++)
     {   
         mpz_urandomm(temp, state, sequence[i - 1]);
         mpz_add_ui(temp, temp, 1);          // urandomm generates from 0
@@ -35,77 +31,120 @@ void super_increasing_sequence(int n, mpz_t *sequence, mpz_t *res)
     mpz_urandomm(temp, state, sum);
     mpz_add((*res), temp, sum);
 
-    mpz_clear(temp);
-    mpz_clear(sum);
+    mpz_clears(temp, sum, NULL);
     return;
 }
 
-/* calculates pcgd between 2 integers */
-/*
-bignumber gcd(bignumber  a, bignumber  b)
-{
-    while(b != 0)
-    {
-        bignumber temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return a;
-}
-*/
+/* finds a number < q coprime with q*/
+void find_coprime(mpz_t q, mpz_t res)
+{   
+    mpz_t gcd;
+    mpz_init(gcd);
+    mpz_urandomm(res, state, q);
+    mpz_gcd(gcd, q, res);
 
-/* return an integer coprime with q with value > minValue
- * minValue isn't necessary but we it's safer than having a small r */
-/*
-bignumber find_coprime(bignumber q, bignumber minValue)
-{
-    int smallPrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
-    int n = 25;
-    bignumber r = 1;
-
-    for (int i = 0; i < n ; i++)
+    while (mpz_cmp_ui(gcd, 1) != 0)
     {
-        if (gcd(smallPrimes[i], q) == 1)
-        {   
-            r *= smallPrimes[i];
-            if(r > minValue)
-                return r;
-        }
+        mpz_urandomm(res, state, q);
+        mpz_gcd(gcd, q, res);
     }
-    return r;
+
+    mpz_clear(gcd);
+    return;
 }
-*/
+
+/* calculate the sequence B so that bi = r*ai % q 
+ * sequence_b must be initialized before */
+void public_sequence(mpz_t *sequence_a, mpz_t *sequence_b, const mpz_t q, const mpz_t r)
+{
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+    {
+        mpz_mul(sequence_b[i], sequence_a[i], r);
+        mpz_mod(sequence_b[i], sequence_b[i], q);
+    }
+    return;
+}
+
+void str_to_binary(char *message, char* binary)
+{
+    int len = strlen(message);
+    for(int i = 0; i < MESSAGE_LENGTH; i++)
+    {   
+        if (i/8 < len)
+            binary[i] = ((message[i / 8] >> (i % 8)) & 1) ? '1' : '0';
+        else
+            binary[i] = '0';
+    }
+}
+
+/* cipers the message, cipher must be initialized to 1 */
+void encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
+{
+    int len = MIN(strlen(message), MESSAGE_LENGTH);
+    for(int i = 0; i < len; i++)
+    {
+        if ((message[i / 8] >> (i % 8)) & 1)
+            mpz_mul(cipher, cipher, pub_sequence[i]);
+    }
+}
+
 
 int main(int argc, char *argv[])
 {
-    // test sequence 
-    int n = 100;
-    mpz_t sequence[n];
-    for (int i = 0; i < n; i++)
+    if(!randomized)
+    {   
+        gmp_randinit_default(state);
+        randomized = true;
+        gmp_randseed_ui(state, time(NULL));
+    }
+
+    // private sequence
+
+    mpz_t sequence[MESSAGE_LENGTH];
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
         mpz_init2(sequence[i], 1024UL);
 
     mpz_t q;
     mpz_init2(q, 1024UL);
-    super_increasing_sequence(n, sequence, &q);
-    
+    super_increasing_sequence(sequence, &q);
     
     for (int i = 0; i < 100; i++)
-    {
-        gmp_printf ("%Zd /", sequence[i]);
-    }
-    gmp_printf("\n q = %Zd\n", q);
+        gmp_printf ("%Zd/ ", sequence[i]);
+    gmp_printf("\nq = %Zd\n", q);
+    
+    // r and public sequence computation 
+    mpz_t r;
+    mpz_init2(r, 1024UL);
+    find_coprime(q, r);
+    gmp_printf("r = %Zd\n", r);
+    
+    mpz_t pub_sequence[MESSAGE_LENGTH];
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+        mpz_init2(pub_sequence[i], 1024UL);
+
+    public_sequence(sequence, pub_sequence, q, r); 
+
+    printf("-------------------------------------\npublic key:\n");
+    for (int i = 0; i < 100; i++)
+        gmp_printf ("%Zd/ ", pub_sequence[i]);
+    printf("\n-------------------------------------\n");
+
+/* public key = pub_sequence
+ * private (key = sequence, r, q) */
 
     
-    // la suite ressemble un peu a la suite de fibonacci 
-    // elle augmente en taille de façon expo
-    /*
-    bignumber r = find_coprime(q, q/2);
-    printf("r = %lld\n",r);
-    printf("gcd = %lld\n",gcd(r,q));
-    */
+    char *message = "message";
+    char binary[MESSAGE_LENGTH];
+    str_to_binary(message, binary);
+    
+    mpz_t cipher;
+    mpz_init2(cipher, 1024UL);
+    encryption(pub_sequence, message, cipher);
 
-    mpz_clear(q);
-    for (int i = 0; i < n; i++)
-        mpz_clear(sequence[i]);
+    
+    mpz_clears(q, r, NULL);
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+        mpz_clears(sequence[i], pub_sequence[i], NULL);   
+    
     return 0;
 }
