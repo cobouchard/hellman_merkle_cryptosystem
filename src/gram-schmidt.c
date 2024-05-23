@@ -4,64 +4,58 @@
 #include "../include/gram-schmidt.h"
 #include "../include/main.h"
 
-void dot_product(struct Vector* a,struct Vector* b, mpz_t* result){
-    mpz_t temp;
-    mpz_init2(temp, DEFAULT_SIZE);
-    mpz_init2(*result, DEFAULT_SIZE);
+void dot_product(struct Vector* a,struct Vector* b, mpf_t* result){
+    mpf_t temp;
+    mpf_init(temp);
+    mpf_init(temp);
 
     for(int i=0; i!=BASE_SIZE; i++){
-        mpz_mul(temp, a->coefficients[i], b->coefficients[i]);
-        mpz_add(*result, *result, temp);
+        mpf_mul(temp, a->coefficients[i], b->coefficients[i]);
+        mpf_add(*result, *result, temp);
     }
 
-    mpz_clear(temp);
+    mpf_clear(temp);
 }
 
 void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj){
-    mpz_t scalar;
-    mpz_init2(scalar, DEFAULT_SIZE);
+    mpf_t scalar, temp;
+    mpf_init(scalar);
+    mpf_init(temp);
 
-    mpz_t* temp = (mpz_t*)malloc(sizeof (mpz_t*));
-    if(temp==NULL){
-        errx(EXIT_FAILURE, "Failed allocation of temp in vector_projection()\n");
-    }
 
-    dot_product(v,u, temp);
-    mpz_set(scalar, *temp);
-
-    dot_product(u,u,temp);
-    mpz_cdiv_q(scalar, scalar, *temp);
+    dot_product(v, u, &scalar);
+    dot_product(u, u, &temp);
+    mpf_div(scalar, scalar, temp);
 
 
     for(int i=0; i!=BASE_SIZE; i++){
-        mpz_mul(proj->coefficients[i], u->coefficients[i], scalar);
+        mpf_mul(proj->coefficients[i], u->coefficients[i], scalar);
     }
 
-    mpz_clear(*temp);
-    mpz_clear(scalar);
-    free(temp);
+    mpf_clear(temp);
+    mpf_clear(scalar);
 }
 
-void gram_schmidt(struct Vector* v[], struct Vector* u[]){
+void gram_schmidt(struct Vector* v[], struct Vector* u[], int number_of_vectors){
     for(int i=0; i!=BASE_SIZE; i++){
-        mpz_set(u[0]->coefficients[i], v[0]->coefficients[i]);
+        mpf_set(u[0]->coefficients[i], v[0]->coefficients[i]);
     }
 
-    size_t number_of_vectors = sizeof(*v)/sizeof(v[0]);
     for(int vector_index=1; vector_index!=number_of_vectors; vector_index++){
         for(int coeff=0; coeff!=BASE_SIZE; coeff++){
-            mpz_set(u[vector_index]->coefficients[coeff], v[vector_index]->coefficients[coeff]);
+            mpf_set(u[vector_index]->coefficients[coeff], v[vector_index]->coefficients[coeff]);
         }
 
         //subtract projections
 
-        for(int sum_index=1; sum_index!=vector_index+1; sum_index++){
+        for(int sum_index=0; sum_index!=vector_index; sum_index++){
             struct Vector proj_ui;
             init_vector(&proj_ui);
             vector_projection(u[sum_index], v[vector_index], &proj_ui);
             for(int i=0; i!= BASE_SIZE; i++){
-                mpz_sub(u[vector_index]->coefficients[i], u[vector_index]->coefficients[i], proj_ui.coefficients[i]);
+                mpf_sub(u[vector_index]->coefficients[i], u[vector_index]->coefficients[i], proj_ui.coefficients[i]);
             }
+            clear_vector(&proj_ui);
         }
     }
 }
@@ -69,7 +63,13 @@ void gram_schmidt(struct Vector* v[], struct Vector* u[]){
 
 void init_vector(struct Vector* vector){
     for(int i=0; i!=BASE_SIZE; i++){
-        mpz_init2(vector->coefficients[i], DEFAULT_SIZE);
+        mpf_init(vector->coefficients[i]);
+    }
+}
+
+void clear_vector(struct Vector* v){
+    for (int i = 0; i!=BASE_SIZE; i++) {
+        mpf_clear(v->coefficients[i]);
     }
 }
 
@@ -77,14 +77,15 @@ void print_vector(struct Vector* vector){
     for(int i=0; i!=BASE_SIZE; i++){
         //gmp_printf("\nq = %Zd\n", q);
         if(i!=BASE_SIZE-1)
-            gmp_printf("%Zd,", vector->coefficients[i]);
+            gmp_printf("%. *Ff,", 10, vector->coefficients[i]);
         else
-            gmp_printf("%Zd\n", vector->coefficients[i]);
+            gmp_printf("%.* Ff\n", 10, vector->coefficients[i]);
     }
 }
 
 
 void test_gram_schmidt(){
+    mpf_set_default_prec(DEFAULT_SIZE);
     struct Vector b1, b2, b3;
     struct Vector c1, c2, c3;
     init_vector(&b1);init_vector(&b2);init_vector(&b3);
@@ -92,23 +93,27 @@ void test_gram_schmidt(){
     struct Vector* v[3] = {&b1,&b2,&b3};
     struct Vector* u[3] = {&c1,&c2,&c3};
 
-    mpz_set_ui(b1.coefficients[0], 1);
-    mpz_set_ui(b1.coefficients[1], 1);
-    mpz_set_ui(b1.coefficients[2], 1);
+    mpf_set_si(b1.coefficients[0], 1);
+    mpf_set_si(b1.coefficients[1], 1);
+    mpf_set_si(b1.coefficients[2], 1);
 
-    mpz_set_ui(b2.coefficients[0], -1);
-    mpz_set_ui(b2.coefficients[1], 0);
-    mpz_set_ui(b2.coefficients[2], 3);
+    mpf_set_si(b2.coefficients[0], -1);
+    mpf_set_si(b2.coefficients[1], 1);
+    mpf_set_si(b2.coefficients[2], 3);
 
-    mpz_set_ui(b3.coefficients[0], 3);
-    mpz_set_ui(b3.coefficients[1], 5);
-    mpz_set_ui(b3.coefficients[2], 6);
+    mpf_set_si(b3.coefficients[0], 3);
+    mpf_set_si(b3.coefficients[1], 5);
+    mpf_set_si(b3.coefficients[2], 6);
 
-    mpz_t temp;
-    mpz_init2(temp, DEFAULT_SIZE);
+    mpf_t temp;
+    mpf_init(temp);
 
-    gram_schmidt(v, u);
+    //vector_projection(v[0], v[1], v[2]);
+
+    gram_schmidt(v, u, 3);
     for(int i=0; i!=BASE_SIZE; i++)
         print_vector(u[i]);
 
+    clear_vector(&b1); clear_vector(&b2); clear_vector(&b3);
+    clear_vector(&c1); clear_vector(&c2); clear_vector(&c3);
 }
