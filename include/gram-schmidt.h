@@ -6,7 +6,6 @@
 #define BASE_SIZE 3
 
 struct Vector{
-    int size;
     mpz_t coefficients[BASE_SIZE];
 };
 

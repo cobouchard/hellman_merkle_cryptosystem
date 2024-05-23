@@ -9,7 +9,7 @@ void dot_product(struct Vector* a,struct Vector* b, mpz_t* result){
     mpz_init2(temp, DEFAULT_SIZE);
     mpz_init2(*result, DEFAULT_SIZE);
 
-    for(int i=0; i!=a->size; i++){
+    for(int i=0; i!=BASE_SIZE; i++){
         mpz_mul(temp, a->coefficients[i], b->coefficients[i]);
         mpz_add(*result, *result, temp);
     }
@@ -33,7 +33,7 @@ void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj){
     mpz_cdiv_q(scalar, scalar, *temp);
 
 
-    for(int i=0; i!=sizeof(*proj); i++){
+    for(int i=0; i!=BASE_SIZE; i++){
         mpz_mul(proj->coefficients[i], u->coefficients[i], scalar);
     }
 
@@ -43,11 +43,12 @@ void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj){
 }
 
 void gram_schmidt(struct Vector* v[], struct Vector* u[]){
-    for(int i=0; i!=sizeof(*v[0]); i++){
+    for(int i=0; i!=BASE_SIZE; i++){
         mpz_set(u[0]->coefficients[i], v[0]->coefficients[i]);
     }
 
-    for(int vector_index=1; vector_index!=BASE_SIZE; vector_index++){
+    size_t number_of_vectors = sizeof(*v)/sizeof(v[0]);
+    for(int vector_index=1; vector_index!=number_of_vectors; vector_index++){
         for(int coeff=0; coeff!=BASE_SIZE; coeff++){
             mpz_set(u[vector_index]->coefficients[coeff], v[vector_index]->coefficients[coeff]);
         }
@@ -58,7 +59,7 @@ void gram_schmidt(struct Vector* v[], struct Vector* u[]){
             struct Vector proj_ui;
             init_vector(&proj_ui);
             vector_projection(u[sum_index], v[vector_index], &proj_ui);
-            for(int i=0; i!= proj_ui.size; i++){
+            for(int i=0; i!= BASE_SIZE; i++){
                 mpz_sub(u[vector_index]->coefficients[i], u[vector_index]->coefficients[i], proj_ui.coefficients[i]);
             }
         }
@@ -85,7 +86,11 @@ void print_vector(struct Vector* vector){
 
 void test_gram_schmidt(){
     struct Vector b1, b2, b3;
+    struct Vector c1, c2, c3;
     init_vector(&b1);init_vector(&b2);init_vector(&b3);
+    init_vector(&c1);init_vector(&c2);init_vector(&c3);
+    struct Vector* v[3] = {&b1,&b2,&b3};
+    struct Vector* u[3] = {&c1,&c2,&c3};
 
     mpz_set_ui(b1.coefficients[0], 1);
     mpz_set_ui(b1.coefficients[1], 1);
@@ -93,7 +98,7 @@ void test_gram_schmidt(){
 
     mpz_set_ui(b2.coefficients[0], -1);
     mpz_set_ui(b2.coefficients[1], 0);
-    mpz_set_ui(b2.coefficients[2], 2);
+    mpz_set_ui(b2.coefficients[2], 3);
 
     mpz_set_ui(b3.coefficients[0], 3);
     mpz_set_ui(b3.coefficients[1], 5);
@@ -102,6 +107,8 @@ void test_gram_schmidt(){
     mpz_t temp;
     mpz_init2(temp, DEFAULT_SIZE);
 
-    print_vector(&b1);
-    //dot_product(&b1,&b2, &temp);
+    gram_schmidt(v, u);
+    for(int i=0; i!=BASE_SIZE; i++)
+        print_vector(u[i]);
+
 }

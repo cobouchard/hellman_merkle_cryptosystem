@@ -78,7 +78,7 @@ void str_to_binary(char *message, char* binary)
     }
 }
 
-/* cipers the message, cipher must be initialized to 1 */
+/* ciphers the message, cipher must be initialized to 1 */
 void encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
 {
     int len = MIN(strlen(message), MESSAGE_LENGTH);

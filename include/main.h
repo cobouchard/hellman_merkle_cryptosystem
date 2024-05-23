@@ -13,7 +13,7 @@
 #include <gmp.h>
 
 #define MESSAGE_LENGTH 100
-#define DEFAULT_SIZE 1024UL
+#define DEFAULT_SIZE 1024
 
 typedef unsigned long long bignumber;
 
