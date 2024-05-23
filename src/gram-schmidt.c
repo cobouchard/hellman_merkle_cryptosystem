@@ -19,7 +19,7 @@ mpz_t* dot_product(struct Vector* a,struct Vector* b){
     return product;
 }
 
-void vector_projection(mpz_t* u[], mpz_t* v[], mpz_t* proj[]){
+void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj){
     mpz_t scalar;
     mpz_init2(scalar, DEFAULT_SIZE);
 
@@ -33,7 +33,7 @@ void vector_projection(mpz_t* u[], mpz_t* v[], mpz_t* proj[]){
     free(temp);
 
     for(int i=0; i!=sizeof(*proj); i++){
-        mpz_mul(*proj[i], *u[i], scalar);
+        mpz_mul(proj->coefficients[i], u->coefficients[i], scalar);
     }
 
     mpz_clear(scalar);

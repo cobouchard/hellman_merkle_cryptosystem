@@ -11,7 +11,7 @@ struct Vector{
 };
 
 mpz_t* dot_product(struct Vector* a,struct Vector* b);
-void vector_projection(mpz_t* u[], mpz_t* v[], mpz_t* proj[]);
+void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj);
 void gram_schmidt(struct Vector* v[], struct Vector* u[]);
 void init_vector(struct Vector* vector);
 
