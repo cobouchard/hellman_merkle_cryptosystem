@@ -10,12 +10,15 @@ rebuild : clean mhe
 debug: main.o
 	$(CC) $(CFLAGS) -g3 $(CPPFLAGS) -o $(EXE) $^ $(LDFLAGS)
 
-mhe : main.o
+mhe : main.o cryptosystem.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o  $@ $^ $(LDFLAGS)
 
 main.o : main.c ../include/main.h 
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^
 
+cryptosystem.o : cryptosystem.c ../include/cryptosystem.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^
+	
 gram.o : gram-schmidt.c ../include/gram-schmidt.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $^
 
