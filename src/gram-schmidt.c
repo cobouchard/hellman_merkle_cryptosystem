@@ -54,7 +54,10 @@ void gram_schmidt(struct Vector* v[], struct Vector* u[]){
         for(int sum_index=1; sum_index!=vector_index+1; sum_index++){
             struct Vector proj_ui;
             init_vector(&proj_ui);
-            //vector_projection(u[sum_index]->coefficients, v[vector_index]->coefficients, proj_ui);
+            vector_projection(u[sum_index], v[vector_index], &proj_ui);
+            for(int i=0; i!= proj_ui.size; i++){
+                mpz_sub(u[vector_index]->coefficients[i], u[vector_index]->coefficients[i], proj_ui.coefficients[i]);
+            }
         }
     }
 }
