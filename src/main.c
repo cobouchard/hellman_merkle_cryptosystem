@@ -2,6 +2,7 @@
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #include "gram-schmidt.h"
+#include "attack.h"
 
 static gmp_randstate_t state;
 static bool randomized = false;
@@ -92,6 +93,6 @@ void encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
 
 int main(int argc, char *argv[])
 {
-    test_gram_schmidt();
-
+    //test_gram_schmidt();
+    test_attack();
 }
