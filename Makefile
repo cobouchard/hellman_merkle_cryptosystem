@@ -9,6 +9,7 @@ build :
 	@cp src/$(EXE) $(EXE)
 
 clean : 
+	@rm -rf cipher.txt decipher.txt
 	@cd src && $(MAKE) clean
 	@rm -rf $(EXE)
 	@cd include && rm -rf *.h.gch

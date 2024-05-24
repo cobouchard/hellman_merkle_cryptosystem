@@ -124,7 +124,7 @@ void subset_sum_solver(mpz_t c, int *indexes, mpz_t *sequence)
     
 }
 
-void decryption(mpz_t cipher, mpz_t *sequence, const mpz_t q, const mpz_t r, unsigned char *res)
+void one_block_decryption(mpz_t cipher, mpz_t *sequence, const mpz_t q, const mpz_t r, unsigned char *res)
 {
     mpz_t invert;
     mpz_init2(invert, DEFAULT_SIZE);
@@ -206,7 +206,7 @@ void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r)
     while (gmp_fscanf(cipher_file, "%Zd ", z) != EOF)
     {
         unsigned char res[MESSAGE_LENGTH/8 + 1];
-        decryption(z, sequence, q, r, res);
+        one_block_decryption(z, sequence, q, r, res);
         fprintf(output_file,"%s", res);
     }
 
