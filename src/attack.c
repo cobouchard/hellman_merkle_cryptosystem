@@ -20,9 +20,9 @@ void lll(struct Vector* v[], int number_of_vectors){
 
         for(int j=k-1; j>=0; j--){
             get_u_ij(v,u,k,j,temp,number_of_vectors);
-            mpf_abs(temp, temp);
+            mpf_abs(temp2, temp);
 
-            if(mpf_cmp_d(temp, 0.5)>0){
+            if(mpf_cmp_d(temp2, 0.5)>0){
                 mpz_t converted_int;
                 mpz_init (converted_int);
                 nearest_integer(temp,converted_int);
@@ -56,7 +56,7 @@ void lll(struct Vector* v[], int number_of_vectors){
                 mpf_swap(v[k]->coefficients[i], v[k-1]->coefficients[i]);
             }
             gram_schmidt(v,u,number_of_vectors);
-            k = ((k-1 > 2) ? k - 1 : 2)-1;
+            k = (( (k-1) > 2 ) ? k - 1 : 2) -1;
         }
 
         mpf_clear(left_side);
@@ -107,7 +107,7 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
 
     for(int i=0; i!=key_size+1; i++){
         for(int j=0; j!=key_size+1; j++){
-            gmp_printf("%. *Ff ", 3, columns[i]->coefficients[j]);
+            gmp_printf("%. *Ff ", 3, columns[j]->coefficients[i]);
         }
         printf("\n");
     }
