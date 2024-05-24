@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
         break;
 
     case ATTACK:
+
+    
     case DECRYPTION:
         if(optind <= argc)
             read_private_key(argv[optind - 1], sequence, q, r);
@@ -90,7 +92,7 @@ int main(int argc, char *argv[])
         }
         ecb_encryption(pub_sequence, message);
         break;
-        
+
     case GENERATION:
         initialisation(sequence, q, r, pub_sequence);
         store_private_key(PRIVATEKEY, sequence, q, r);

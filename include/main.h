@@ -7,14 +7,6 @@
 #include <string.h>
 #include <gmp.h>
 
-typedef enum {
-    DECRYPTION,
-    ENCRYPTION,
-    GENERATION,
-    ATTACK,
-    UNINITIALIZED
-}  crypto_mode;
-
 #define DEFAULT_MESSAGE "message plus long"
 #define CIPHERTXT "cipher.txt"
 #define DECIPHERTXT "decipher.txt"

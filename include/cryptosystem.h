@@ -10,6 +10,14 @@
 
 #include <gmp.h>
 
+typedef enum {
+    DECRYPTION,
+    ENCRYPTION,
+    GENERATION,
+    ATTACK,
+    UNINITIALIZED
+}  crypto_mode;
+
 #define MESSAGE_LENGTH 96 // or 104
 #define DEFAULT_SIZE 1024UL
 #define MIN(a, b) ((a) < (b) ? (a) : (b))

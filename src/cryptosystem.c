@@ -300,11 +300,12 @@ void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r, crypto_mo
     {
         unsigned char res[MESSAGE_LENGTH/8 + 1];
 
-        if(mode==DECRYPTION)
-            one_block_decryption(z, sequence, q, r, res);
-        else
+        if(mode == ATTACK)
             one_block_attack(z,pub_sequence,res);
-
+        else
+        {
+            one_block_decryption(z, sequence, q, r, res);
+        }
         fprintf(output_file,"%s", res);
     }
 
