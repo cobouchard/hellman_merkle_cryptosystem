@@ -1,6 +1,6 @@
 #include "../include/cryptosystem.h"
-
-
+#include "../include/main.h"
+#include "../include/attack.h"
 
 static gmp_randstate_t state;
 static bool randomized = false;
@@ -214,6 +214,26 @@ void subset_sum_solver(mpz_t c, int *indexes, mpz_t *sequence)
     
 }
 
+void convert_indexes(int* indexes, unsigned char* res){
+    int pow;
+    int temp_int;
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+    {
+        if (i % 8 == 0)
+        {
+            pow = 1;
+            temp_int = 0;
+        }
+
+        temp_int += indexes[i] * pow;
+        pow *= 2;
+
+        if ((i + 1) % 8 == 0)
+            res[i/8] = temp_int;
+
+    }
+}
+
 void one_block_decryption(mpz_t cipher, mpz_t *sequence, const mpz_t q, const mpz_t r, unsigned char *res)
 {
     mpz_t invert;
@@ -230,24 +250,7 @@ void one_block_decryption(mpz_t cipher, mpz_t *sequence, const mpz_t q, const mp
         indexes[i] = 0;
     subset_sum_solver(c, indexes, sequence);
 
-    int pow;
-    int temp_int;
-    for (int i = 0; i < MESSAGE_LENGTH; i++)
-    {   
-        if (i % 8 == 0)
-        {
-            pow = 1;
-            temp_int = 0;
-        }
-
-        temp_int += indexes[i] * pow;
-        pow *= 2;
-
-        if ((i + 1) % 8 == 0)
-            res[i/8] = temp_int;
-        
-    }
-    return;
+    convert_indexes(indexes, res);
 }
 
 void ecb_encryption(mpz_t *pub_sequence, char *full_message)
@@ -278,7 +281,7 @@ void ecb_encryption(mpz_t *pub_sequence, char *full_message)
     fclose(output_file);
 }
 
-void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r)
+void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r, crypto_mode mode, mpz_t *pub_sequence)
 {
     FILE *cipher_file = NULL;
     cipher_file = fopen(filename, "r");
@@ -296,11 +299,38 @@ void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r)
     while (gmp_fscanf(cipher_file, "%Zd ", z) != EOF)
     {
         unsigned char res[MESSAGE_LENGTH/8 + 1];
-        one_block_decryption(z, sequence, q, r, res);
+
+        if(mode==DECRYPTION)
+            one_block_decryption(z, sequence, q, r, res);
+        else
+            one_block_attack(z,pub_sequence,res);
+
         fprintf(output_file,"%s", res);
     }
 
     mpz_clear(z);
     fclose(cipher_file);
     fclose(output_file);
+}
+
+void one_block_attack(mpz_t cipher, mpz_t* pub_sequence, unsigned char* res){
+    mpz_t public_key[MESSAGE_LENGTH];
+    for(int i=0; i!=MESSAGE_LENGTH; i++){
+        mpz_init(public_key[i]);
+        mpz_set(public_key[i], pub_sequence[i]);
+    }
+
+    mpz_t temp; mpz_init(temp);
+    attack(public_key, MESSAGE_LENGTH, cipher, temp);
+    int indexes[MESSAGE_LENGTH];
+    for(int i=0; i!=MESSAGE_LENGTH; i++){
+
+        if(mpz_tstbit(temp,i))
+            indexes[i]=1;
+        else
+            indexes[i]=0;
+    }
+
+    convert_indexes(indexes, res);
+    mpz_clear(temp);
 }

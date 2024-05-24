@@ -18,28 +18,34 @@ int main(int argc, char *argv[])
         {
         case 'c':
             if (mode != UNINITIALIZED)
-                errx(EXIT_FAILURE, "error: only one cryptography mode allowed.");
+                errx(EXIT_FAILURE, "error: only one cryptography mode allowed\n");
             if (!optarg)
-                errx(EXIT_FAILURE, "error: encryption mode needs an argument.");
+                errx(EXIT_FAILURE, "error: encryption mode needs an argument\n");
             mode = ENCRYPTION;
             break;
 
         case 'd':
             if (mode != UNINITIALIZED)
-                errx(EXIT_FAILURE, "error: only one cryptography mode allowed.");
+                errx(EXIT_FAILURE, "error: only one cryptography mode allowed\n");
             if (!optarg)
-                errx(EXIT_FAILURE, "error: decryption mode needs an argument.");
+                errx(EXIT_FAILURE, "error: decryption mode needs an argument\n");
             mode = DECRYPTION;
             break;
 
         case 'g':
             if (mode != UNINITIALIZED)
-                errx(EXIT_FAILURE, "error: only one cryptography mode allowed.");
+                errx(EXIT_FAILURE, "error: only one cryptography mode allowed\n");
             mode = GENERATION;
             break;
 
+        case 'a':
+            if (mode != UNINITIALIZED)
+                errx(EXIT_FAILURE, "error: only one cryptography mode allowed\n");
+            mode = ATTACK;
+            break;
+
         default:
-            errx(EXIT_FAILURE, "error: option %c not allowed.",opt);
+            errx(EXIT_FAILURE, "error: option %c not allowed\n",opt);
             break;
         }
     }
@@ -56,10 +62,11 @@ int main(int argc, char *argv[])
     case UNINITIALIZED:
         printf("DEMO:\nm = \"message plus long\"\n");
         ecb_encryption(pub_sequence, message);
-        ecb_decryption(sequence, input_file, q, r);
+        ecb_decryption(sequence, input_file, q, r, mode, pub_sequence);
         printf("results written in files \'%s\' and \'%s\'\n", CIPHERTXT, DECIPHERTXT);
         break;
 
+    case ATTACK:
     case DECRYPTION:
         if(optind <= argc)
             read_private_key(argv[optind - 1], sequence, q, r);
@@ -68,7 +75,9 @@ int main(int argc, char *argv[])
             printf("%s not given, generating one...\n", PRIVATEKEY);
             initialisation(sequence, q, r, pub_sequence);
         }
-        ecb_decryption(sequence, CIPHERTXT, q, r);
+
+        ecb_decryption(sequence, CIPHERTXT, q, r, mode, pub_sequence);
+
         break;
 
     case ENCRYPTION:

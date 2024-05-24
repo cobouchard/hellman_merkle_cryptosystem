@@ -3,9 +3,12 @@
 *.pdf
 *.PDF
 *.png
+*.swp
 
 mhe
 src/mhe
 
 .idea/*
 
+cipher.txt
+decipher.txt

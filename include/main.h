@@ -11,6 +11,7 @@ typedef enum {
     DECRYPTION,
     ENCRYPTION,
     GENERATION,
+    ATTACK,
     UNINITIALIZED
 }  crypto_mode;
 

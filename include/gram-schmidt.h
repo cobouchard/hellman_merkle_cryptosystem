@@ -3,7 +3,7 @@
 
 #include <gmp.h>
 
-#define BASE_SIZE 10
+#define BASE_SIZE 96
 #define DELTA 0.75
 
 struct Vector{
