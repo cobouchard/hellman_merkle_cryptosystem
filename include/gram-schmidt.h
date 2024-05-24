@@ -4,6 +4,7 @@
 #include <gmp.h>
 
 #define BASE_SIZE 3
+#define DELTA 0.75
 
 struct Vector{
     mpf_t coefficients[BASE_SIZE];
@@ -17,6 +18,7 @@ void nearest_integer(mpf_t* floaty, mpz_t* result);
 void norm2(struct Vector* vector, mpf_t* result);
 void dot_product(struct Vector* a,struct Vector* b, mpf_t* result);
 void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj);
+void get_u_ij(struct Vector* b[], struct Vector* b_prime[], int i, int j, mpf_t* result);
 
 void gram_schmidt(struct Vector* v[], struct Vector* u[], int number_of_vectors);
 void lll(struct Vector* v[], int number_of_vectors);
