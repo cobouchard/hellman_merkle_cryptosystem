@@ -1,8 +1,8 @@
-#include "../include/attack.h"
 #include <gmp.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <err.h>
+
+#include "../include/attack.h"
 
 void lll(struct Vector* v[], int number_of_vectors){
     struct Vector* u[number_of_vectors]; //containing the orthonormalized basis
@@ -17,24 +17,25 @@ void lll(struct Vector* v[], int number_of_vectors){
     mpf_init(temp); mpf_init(temp2);
 
     for(int k=1; k<number_of_vectors; ){
-
         for(int j=k-1; j>=0; j--){
             get_u_ij(v,u,k,j,temp,number_of_vectors);
             mpf_abs(temp2, temp);
 
             if(mpf_cmp_d(temp2, 0.5)>0){
+
                 mpz_t converted_int;
                 mpz_init (converted_int);
                 nearest_integer(temp,converted_int);
                 mpf_set_z(temp2, converted_int);
+
                 for(int i=0; i!=number_of_vectors; i++){
                     mpf_mul(temp, v[j]->coefficients[i], temp2);
                     mpf_sub(v[k]->coefficients[i], v[k]->coefficients[i], temp);
                 }
                 gram_schmidt(v,u,number_of_vectors);
             }
-
         }
+
         mpf_t right_side, left_side;
         mpf_init(right_side); mpf_init(left_side);
 
@@ -45,6 +46,7 @@ void lll(struct Vector* v[], int number_of_vectors){
         mpf_pow_ui(temp, temp, 2);
         mpf_set_d(temp2, DELTA);
         mpf_sub(temp, temp2, temp);
+
         mpf_mul(right_side, temp, right_side);
 
 
@@ -61,7 +63,6 @@ void lll(struct Vector* v[], int number_of_vectors){
 
         mpf_clear(left_side);
         mpf_clear(right_side);
-
     }
 
     for(int i = 0; i < number_of_vectors; i++) {
@@ -99,13 +100,6 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
 
     lll(columns, key_size+1);
 
-//    for(int i=0; i!=key_size+1; i++){
-//        for(int j=0; j!=key_size+1; j++){
-//            gmp_printf("%. *Ff ", 3, columns[i]->coefficients[j]);
-//        }
-//        printf("\n");
-//    }
-
     //we now have to find the correct column giving the message
     int correct_column=-1;
     for(int column=0; column!=key_size+1; column++){
@@ -136,8 +130,10 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
         }
     }
 
-
-    //penser à clear
+    for(int i=0; i!=key_size+1; i++){
+        clear_vector(columns[i], key_size+1);
+        free(columns[i]);
+    }
 }
 
 void test_attack(){
