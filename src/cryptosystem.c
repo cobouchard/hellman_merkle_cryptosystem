@@ -214,7 +214,7 @@ void subset_sum_solver(mpz_t c, int *indexes, mpz_t *sequence)
     
 }
 
-void convert_indexes(int* indexes, unsigned char* res){
+void convert_indexes(int indexes[], unsigned char* res){
     int pow;
     int temp_int;
     for (int i = 0; i < MESSAGE_LENGTH; i++)
@@ -300,12 +300,12 @@ void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r, crypto_mo
     {
         unsigned char res[MESSAGE_LENGTH/8 + 1];
 
-        if(mode == ATTACK)
+        if (mode == ATTACK)
             one_block_attack(z,pub_sequence,res);
         else
-        {
             one_block_decryption(z, sequence, q, r, res);
-        }
+
+
         fprintf(output_file,"%s", res);
     }
 
@@ -333,5 +333,9 @@ void one_block_attack(mpz_t cipher, mpz_t* pub_sequence, unsigned char* res){
     }
 
     convert_indexes(indexes, res);
+
     mpz_clear(temp);
+    for(int i=0; i!=MESSAGE_LENGTH; i++){
+        mpz_clear(public_key[i]);
+    }
 }

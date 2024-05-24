@@ -2,12 +2,12 @@
 #define GRAM_SCHMIDT_H
 
 #include <gmp.h>
+#include "cryptosystem.h"
 
-#define BASE_SIZE 96
 #define DELTA 0.75
 
 struct Vector{
-    mpf_t coefficients[BASE_SIZE];
+    mpf_t coefficients[MESSAGE_LENGTH];
 };
 
 void test_gram_schmidt();

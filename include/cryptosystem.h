@@ -7,7 +7,6 @@
 #include <stdlib.h> 
 #include <string.h>
 #include <time.h>
-
 #include <gmp.h>
 
 typedef enum {

@@ -1,6 +1,7 @@
 #include <gmp.h>
 #include <stdlib.h>
 #include <err.h>
+#include <stdio.h>
 
 #include "../include/attack.h"
 
