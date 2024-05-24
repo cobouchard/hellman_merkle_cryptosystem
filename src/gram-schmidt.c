@@ -84,12 +84,12 @@ void gram_schmidt(struct Vector* v[], struct Vector* u[], int number_of_vectors)
     for(int i=0; i!=number_of_vectors; i++){
         mpf_set(u[0]->coefficients[i], v[0]->coefficients[i]);
     }
-
+    
     for(int vector_index=1; vector_index!=number_of_vectors; vector_index++){
         for(int coeff=0; coeff!=number_of_vectors; coeff++){
             mpf_set(u[vector_index]->coefficients[coeff], v[vector_index]->coefficients[coeff]);
         }
-
+        
         //subtract projections
         for(int sum_index=0; sum_index!=vector_index; sum_index++){
             struct Vector proj_ui;

@@ -2,6 +2,8 @@
 #include "gram-schmidt.h"
 #include "cryptosystem.h"
 
+static bool pseq = false;
+static bool seq = false;
 
 static crypto_mode mode = UNINITIALIZED;
 
@@ -54,12 +56,15 @@ int main(int argc, char *argv[])
     char *input_file = (mode == DECRYPTION)? argv[optind -1]: CIPHERTXT;
 
     optind++;
-        read_private_key(PRIVATEKEY, sequence, q, r);
-        read_public_key(PUBLICKEY, pub_sequence);
 
     switch (mode)
     {
     case UNINITIALIZED:
+        //initialisation(sequence, q, r, pub_sequence);
+        read_public_key(PUBLICKEY, pub_sequence); 
+        pseq = true;
+        read_private_key(PRIVATEKEY, sequence, q, r);
+        seq = true;
         printf("DEMO:\nm = \"message plus long\"\n");
         ecb_encryption(pub_sequence, message);
         ecb_decryption(sequence, input_file, q, r, mode, pub_sequence);
@@ -67,15 +72,24 @@ int main(int argc, char *argv[])
         break;
 
     case ATTACK:
-
+        read_public_key(PUBLICKEY, pub_sequence);
+        pseq = true;
+        ecb_decryption(sequence, CIPHERTXT, q, r, mode, pub_sequence);
+        
+        break;
     
     case DECRYPTION:
         if(optind <= argc)
+        {
             read_private_key(argv[optind - 1], sequence, q, r);
+            seq = true;
+        }
         else
         {
             printf("%s not given, generating one...\n", PRIVATEKEY);
             initialisation(sequence, q, r, pub_sequence);
+            pseq = true;
+            seq = true;
         }
 
         ecb_decryption(sequence, CIPHERTXT, q, r, mode, pub_sequence);
@@ -89,6 +103,8 @@ int main(int argc, char *argv[])
         {
             printf("%s not given, generating one...\n", PUBLICKEY);
             initialisation(sequence, q, r, pub_sequence);
+            pseq = true;
+            seq = true;
         }
         ecb_encryption(pub_sequence, message);
         break;
@@ -97,17 +113,23 @@ int main(int argc, char *argv[])
         initialisation(sequence, q, r, pub_sequence);
         store_private_key(PRIVATEKEY, sequence, q, r);
         store_public_key(PUBLICKEY, pub_sequence);
+        pseq = true;
+        seq = true;
         break;
 
     default:
         errx(EXIT_FAILURE, "error: mode has wrong value");
         break;
     }   
-
-
-    mpz_clears(q, r, NULL);
-    for (int i = 0; i < MESSAGE_LENGTH; i++)
-        mpz_clears(sequence[i], pub_sequence[i], NULL);
+    
+    if(seq)
+        mpz_clears(q, r, NULL);
+    if(pseq)
+        for (int i = 0; i < MESSAGE_LENGTH; i++)
+            mpz_clear(pub_sequence[i]);
+    if(seq)
+        for (int i = 0; i < MESSAGE_LENGTH; i++)
+            mpz_clear(sequence[i]);
 
     return 0;
 

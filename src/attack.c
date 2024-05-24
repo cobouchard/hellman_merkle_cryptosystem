@@ -11,8 +11,8 @@ void lll(struct Vector* v[], int number_of_vectors){
         u[i] = (struct Vector*)malloc(sizeof(struct Vector));
         init_vector(u[i], number_of_vectors);
     }
+    
     gram_schmidt(v,u,number_of_vectors);
-
 
     mpf_t temp, temp2;
     mpf_init(temp); mpf_init(temp2);
@@ -77,16 +77,19 @@ void lll(struct Vector* v[], int number_of_vectors){
 void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
     struct Vector* columns[key_size+1];
 
+    mpz_t temp;
+    mpz_init2(temp, DEFAULT_SIZE);
+    mpz_ui_sub(temp, 0, cipher);
     for(int i=0; i!=key_size+1; i++){
         columns[i] = (struct Vector *)malloc(sizeof(struct Vector));
         if(columns[i]==NULL)
             errx(EXIT_FAILURE, "Failed allocation of matrix[%d] in attack()\n", i);
         init_vector(columns[i], key_size+1);
-
+        
         for(int coeff=0; coeff!=key_size+1; coeff++){
             if(coeff==key_size){
                 if(i==key_size)
-                    mpf_set_z(columns[i]->coefficients[coeff], cipher);
+                    mpf_set_z(columns[i]->coefficients[coeff], temp);
                 else
                     mpf_set_z(columns[i]->coefficients[coeff], public_key[i]);
             }
@@ -98,7 +101,7 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
 
         }
     }
-
+    mpz_clear(temp);
     lll(columns, key_size+1);
 
     //we now have to find the correct column giving the message

@@ -7,7 +7,7 @@
 #define DELTA 0.75
 
 struct Vector{
-    mpf_t coefficients[MESSAGE_LENGTH];
+    mpf_t coefficients[MESSAGE_LENGTH + 1];
 };
 
 void test_gram_schmidt();

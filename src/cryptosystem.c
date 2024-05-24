@@ -158,7 +158,7 @@ void read_public_key(char *filename, mpz_t *pub_sequence)
 void store_private_key(char *filename, mpz_t *sequence, mpz_t q, mpz_t r)
 {
     FILE *prv_output;
-    prv_output = fopen(filename,"a");
+    prv_output = fopen(filename,"w");
     if(!prv_output)
         errx(EXIT_FAILURE, "error: prv_output open");
     
@@ -174,7 +174,7 @@ void store_private_key(char *filename, mpz_t *sequence, mpz_t q, mpz_t r)
 void store_public_key(char *filename, mpz_t *pub_sequence)
 {
     FILE *pub_output;
-    pub_output = fopen(filename,"a");
+    pub_output = fopen(filename,"w");
     if(!pub_output)
         errx(EXIT_FAILURE, "error: pub_output open");
 
@@ -184,7 +184,6 @@ void store_public_key(char *filename, mpz_t *pub_sequence)
     gmp_fprintf(pub_output,"%Zd]\n\n", pub_sequence[MESSAGE_LENGTH - 1]);
 
     fclose(pub_output);
-
 }
 
 /* cipers the message, cipher must be initialized */
@@ -293,9 +292,9 @@ void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r, crypto_mo
     if(output_file == NULL)
         errx(EXIT_FAILURE, "error: output_file cannot be opened");
 
-    mpz_t z;  
+    mpz_t z;   
     mpz_init2(z, DEFAULT_SIZE);  
-
+    
     while (gmp_fscanf(cipher_file, "%Zd ", z) != EOF)
     {
         unsigned char res[MESSAGE_LENGTH/8 + 1];
@@ -305,10 +304,9 @@ void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r, crypto_mo
         else
             one_block_decryption(z, sequence, q, r, res);
 
-
         fprintf(output_file,"%s", res);
+        
     }
-
     mpz_clear(z);
     fclose(cipher_file);
     fclose(output_file);
@@ -321,17 +319,18 @@ void one_block_attack(mpz_t cipher, mpz_t* pub_sequence, unsigned char* res){
         mpz_set(public_key[i], pub_sequence[i]);
     }
 
+    
     mpz_t temp; mpz_init(temp);
     attack(public_key, MESSAGE_LENGTH, cipher, temp);
     int indexes[MESSAGE_LENGTH];
     for(int i=0; i!=MESSAGE_LENGTH; i++){
-
+        
         if(mpz_tstbit(temp,i))
             indexes[i]=1;
         else
             indexes[i]=0;
     }
-
+    
     convert_indexes(indexes, res);
 
     mpz_clear(temp);
