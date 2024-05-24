@@ -1,12 +1,7 @@
 #include <gmp.h>
 
 #include "../include/gram-schmidt.h"
-#include "../include/main.h"
 #include "../include/attack.h"
-
-#include <stdlib.h>
-#include <err.h>
-
 #include "../include/cryptosystem.h"
 
 
@@ -61,11 +56,9 @@ void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj, 
     mpf_init(scalar);
     mpf_init(temp);
 
-
     dot_product(v, u, scalar,size);
     dot_product(u, u, temp,size);
     mpf_div(scalar, scalar, temp);
-
 
     for(int i=0; i!=size; i++){
         mpf_mul(proj->coefficients[i], u->coefficients[i], scalar);
@@ -98,7 +91,6 @@ void gram_schmidt(struct Vector* v[], struct Vector* u[], int number_of_vectors)
         }
 
         //subtract projections
-
         for(int sum_index=0; sum_index!=vector_index; sum_index++){
             struct Vector proj_ui;
             init_vector(&proj_ui, number_of_vectors);
@@ -126,7 +118,6 @@ void clear_vector(struct Vector* v, int size){
 
 void print_vector(struct Vector* vector, int size){
     for(int i=0; i!=size; i++){
-        //gmp_printf("\nq = %Zd\n", q);
         if(i!=size-1)
             gmp_printf("%. *Ff,", 10, vector->coefficients[i]);
         else
