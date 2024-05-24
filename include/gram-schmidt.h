@@ -4,7 +4,7 @@
 #include <gmp.h>
 
 #define BASE_SIZE 3
-#define DELTA 0.75
+#define DELTA 0.3
 
 struct Vector{
     mpf_t coefficients[BASE_SIZE];

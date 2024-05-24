@@ -117,7 +117,7 @@ void lll(struct Vector* v[], int number_of_vectors){
     mpf_init(temp); mpf_init(temp2);
 
 
-    for(int k=2; k<number_of_vectors; k++){
+    for(int k=2; k<=number_of_vectors; k++){
         for(int j=k-1; j!=0; j--){
             get_u_ij(v,u,k,j,&temp);
             mpf_abs(temp, temp);
