@@ -7,8 +7,9 @@
 #include <stdlib.h> 
 #include <string.h>
 #include <time.h>
-
 #include <gmp.h>
+
+#include "../include/main.h"
 
 #define MESSAGE_LENGTH 96 // or 104
 #define DEFAULT_SIZE 1024UL
