@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     // private sequence
     
     mpz_t sequence[MESSAGE_LENGTH], q, r, pub_sequence[MESSAGE_LENGTH];
-    initialisation(sequence, q, r, pub_sequence);
+    /*initialisation(sequence, q, r, pub_sequence);
 
     int opt;
     while ((opt = getopt(argc, argv, "c:d:")) != -1)
@@ -63,12 +63,13 @@ int main(int argc, char *argv[])
         break;
     }
 
-    mpz_t pub_sequence2[MESSAGE_LENGTH];
-    read_public_key("public_key", pub_sequence2);
+*/
+    read_private_key("private_key", sequence, q, r);
+    read_public_key("public_key", pub_sequence);
 
     mpz_clears(q, r, NULL);
     for (int i = 0; i < MESSAGE_LENGTH; i++)
-        mpz_clears(sequence[i], pub_sequence[i], pub_sequence2[i], NULL);   
+        mpz_clears(sequence[i], pub_sequence[i], NULL);   
     
     return 0;
 

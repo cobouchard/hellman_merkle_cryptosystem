@@ -82,14 +82,27 @@ void public_sequence(mpz_t *sequence_a, mpz_t *sequence_b, const mpz_t q, const 
 
 void initialisation(mpz_t *sequence, mpz_t q, mpz_t r, mpz_t *pub_sequence)
 {
+    FILE *prv_output;
+    prv_output = fopen("private_key","w");
+    if(!prv_output)
+        errx(EXIT_FAILURE, "error: prv_output open");
+
     for (int i = 0; i < MESSAGE_LENGTH; i++)
         mpz_init2(sequence[i], DEFAULT_SIZE);
-
+    
     mpz_init2(q, DEFAULT_SIZE);
     super_increasing_sequence(sequence, q);
 
     mpz_init2(r, DEFAULT_SIZE);
     find_coprime(q, r);
+
+    fprintf(prv_output,"[");
+    for (int i = 0; i < MESSAGE_LENGTH - 1; i++)
+        gmp_fprintf(prv_output,"%Zd, ", sequence[i]);
+    gmp_fprintf(prv_output,"%Zd]\n", sequence[MESSAGE_LENGTH - 1]);
+
+    gmp_fprintf(prv_output,"q = %Zd\nr = %Zd", q, r);
+    fclose(prv_output);
 
     for (int i = 0; i < MESSAGE_LENGTH; i++)
         mpz_init2(pub_sequence[i], DEFAULT_SIZE);
@@ -109,6 +122,37 @@ void initialisation(mpz_t *sequence, mpz_t q, mpz_t r, mpz_t *pub_sequence)
     fclose(pub_output);
 }
 
+void read_private_key(char *filename, mpz_t *sequence, mpz_t q, mpz_t r)
+{
+    FILE *key_file = NULL;
+    key_file = fopen(filename, "r");
+    if(key_file == NULL)
+        errx(EXIT_FAILURE, "error: private_key cannot be opened");
+    
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+        mpz_init2(sequence[i], DEFAULT_SIZE);
+
+    mpz_t z;  
+    mpz_init2(z, DEFAULT_SIZE);    
+
+    fscanf(key_file,"[");
+    char buf[50];
+    int i = 0;
+
+    while ((gmp_fscanf(key_file, "%Zd%[^ \n]", z, buf) != EOF) && (i < MESSAGE_LENGTH))
+    {
+        mpz_set(sequence[i], z);
+        i++;
+    }
+    
+    mpz_init2(q, DEFAULT_SIZE);
+    mpz_init2(r, DEFAULT_SIZE);
+    gmp_fscanf(key_file, "q = %Zd\nr = %Zd", q, r);
+
+    mpz_clear(z);
+    fclose(key_file);
+}
+
 /* IMPORTANT : key_file MUST be formatted [key1, key2, ..., keyN] */
 void read_public_key(char *filename, mpz_t *pub_sequence)
 {
@@ -119,7 +163,7 @@ void read_public_key(char *filename, mpz_t *pub_sequence)
     
     for (int i = 0; i < MESSAGE_LENGTH; i++)
         mpz_init2(pub_sequence[i], DEFAULT_SIZE);
-        
+
     mpz_t z;  
     mpz_init2(z, DEFAULT_SIZE);    
 
@@ -137,7 +181,6 @@ void read_public_key(char *filename, mpz_t *pub_sequence)
     fclose(key_file);
 }
     
-
 /* cipers the message, cipher must be initialized */
 void one_block_encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
 {
