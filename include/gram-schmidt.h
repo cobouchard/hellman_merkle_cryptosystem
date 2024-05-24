@@ -21,7 +21,7 @@ void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj);
 void get_u_ij(struct Vector* b[], struct Vector* b_prime[], int i, int j, mpf_t result);
 
 void gram_schmidt(struct Vector* v[], struct Vector* u[], int number_of_vectors);
-void lll(struct Vector* v[], int number_of_vectors);
+
 
 
 void test_gram_schmidt();

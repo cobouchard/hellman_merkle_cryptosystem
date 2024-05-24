@@ -10,13 +10,16 @@ rebuild : clean all
 debug : CFLAGS += -g3
 debug: $(EXE)
 
-$(EXE) : main.o gram-schmidt.o
+$(EXE) : main.o gram-schmidt.o attack.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o  $@ $^ $(LDFLAGS)
 
 main.o : main.c ../include/main.h 
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 gram-schmidt.o : gram-schmidt.c ../include/gram-schmidt.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+
+attack.o : attack.c ../include/attack.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 clean : 
