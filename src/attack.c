@@ -1,7 +1,7 @@
 #include "../include/attack.h"
-#include "../include/gram-schmidt.h"
 #include <gmp.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void lll(struct Vector* v[], int number_of_vectors){
     struct Vector* u[number_of_vectors]; //containing the orthonormalized basis
@@ -41,9 +41,14 @@ void lll(struct Vector* v[], int number_of_vectors){
 
         get_u_ij(v,u,k,k-1,temp);
         mpf_pow_ui(temp, temp, 2);
-        mpf_ui_sub(temp, DELTA, temp);
+        mpf_set_d(temp2, DELTA);
+        mpf_sub(temp, temp2, temp);
 
         mpf_mul(right_side, temp, right_side);
+
+        //gmp_printf("%. *Ff,", 10, right_side);
+        //gmp_printf("%. *Ff\n", 10, left_side);
+
 
         if(mpf_cmp(left_side, right_side)>0){ //left_side > right_side
             k=k+1;
@@ -58,6 +63,8 @@ void lll(struct Vector* v[], int number_of_vectors){
 
         mpf_clear(left_side);
         mpf_clear(right_side);
+
+
 
     }
 
