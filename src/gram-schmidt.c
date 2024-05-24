@@ -117,21 +117,21 @@ void lll(struct Vector* v[], int number_of_vectors){
     mpf_init(temp); mpf_init(temp2);
 
 
-    for(int k=2; k<=number_of_vectors; k++){
-        for(int j=k-1; j!=0; j--){
+    for(int k=1; k<number_of_vectors; k++){
+        for(int j=k-1; j>=0; j--){
             get_u_ij(v,u,k,j,&temp);
             mpf_abs(temp, temp);
-            if(mpf_cmp_d(temp, 0.5)>0){ //temp>0.5
-                mpz_t converted_int;
-                mpz_init (converted_int);
-                nearest_integer(&temp,&converted_int);
-                mpf_set_z(temp2, converted_int);
-                for(int i=0; i!=BASE_SIZE; i++){
-                    mpf_mul(temp, v[j]->coefficients[i], temp2);
-                    mpf_sub(v[k]->coefficients[i], v[k]->coefficients[i], temp);
-                }
-                gram_schmidt(v,u,number_of_vectors);
+
+            mpz_t converted_int;
+            mpz_init (converted_int);
+            nearest_integer(&temp,&converted_int);
+            mpf_set_z(temp2, converted_int);
+            for(int i=0; i!=BASE_SIZE; i++){
+                mpf_mul(temp, v[j]->coefficients[i], temp2);
+                mpf_sub(v[k]->coefficients[i], v[k]->coefficients[i], temp);
             }
+            gram_schmidt(v,u,number_of_vectors);
+
         }
 
         mpf_t right_side, left_side;
@@ -154,7 +154,7 @@ void lll(struct Vector* v[], int number_of_vectors){
                 mpf_swap(v[k]->coefficients[i], v[k-1]->coefficients[i]);
             }
             gram_schmidt(v,u,number_of_vectors);
-            k = k-1>2 ? k-1 : 2;
+            k = (k > 1) ? k - 1 : 1;
         }
 
         mpf_clear(left_side);
