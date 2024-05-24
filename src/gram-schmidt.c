@@ -1,8 +1,9 @@
 #include <gmp.h>
 #include <stdlib.h>
 #include <err.h>
-#include "../include/gram-schmidt.h"
-#include "../include/main.h"
+#include "gram-schmidt.h"
+#include "main.h"
+#include "cryptosystem.h"
 
 void dot_product(struct Vector* a,struct Vector* b, mpz_t* result){
     mpz_t temp;

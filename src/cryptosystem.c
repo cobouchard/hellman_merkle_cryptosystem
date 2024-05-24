@@ -1,7 +1,6 @@
 #include "cryptosystem.h"
 
 
-
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 static gmp_randstate_t state;
@@ -10,7 +9,7 @@ static bool randomized = false;
 /* initialize a super increasing sequence of n integers 
  * and return q an integer > sum of all elements of the sequence 
  * sequence must be initialized before */
-void super_increasing_sequence(mpz_t *sequence, mpz_t *q)
+void super_increasing_sequence(mpz_t *sequence, mpz_t q)
 {
     if(!randomized)
     {   
@@ -38,7 +37,7 @@ void super_increasing_sequence(mpz_t *sequence, mpz_t *q)
     }
 
     mpz_urandomm(temp, state, sum);
-    mpz_add((*q), temp, sum);
+    mpz_add(q, temp, sum);
 
     mpz_clears(temp, sum, NULL);
     return;
@@ -81,20 +80,25 @@ void public_sequence(mpz_t *sequence_a, mpz_t *sequence_b, const mpz_t q, const 
     return;
 }
 
-void str_to_binary(char *message, char* binary)
+void initialisation(mpz_t *sequence, mpz_t q, mpz_t r, mpz_t *pub_sequence)
 {
-    int len = strlen(message);
-    for(int i = 0; i < MESSAGE_LENGTH; i++)
-    {   
-        if (i/8 < len)
-            binary[i] = ((message[i / 8] >> (i % 8)) & 1) ? '1' : '0';
-        else
-            binary[i] = '0';
-    }
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+        mpz_init2(sequence[i], DEFAULT_SIZE);
+
+    mpz_init2(q, DEFAULT_SIZE);
+    super_increasing_sequence(sequence, q);
+
+    mpz_init2(r, DEFAULT_SIZE);
+    find_coprime(q, r);
+
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+        mpz_init2(pub_sequence[i], DEFAULT_SIZE);
+
+     public_sequence(sequence, pub_sequence, q, r); 
 }
 
 /* cipers the message, cipher must be initialized */
-void encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
+void one_block_encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
 {
     mpz_set_ui(cipher, 0);
     int len = MIN(strlen(message) * 8, MESSAGE_LENGTH);
@@ -154,4 +158,59 @@ void decryption(mpz_t cipher, mpz_t *sequence, const mpz_t q, const mpz_t r, uns
         
     }
     return;
+}
+
+void ecb_encryption(mpz_t *pub_sequence, char *full_message)
+{
+    FILE *output_file = NULL;
+    output_file = fopen("cipher.txt", "w");
+    if(output_file == NULL)
+        errx(EXIT_FAILURE, "error: output_file cannot be opened");
+    
+    int block_length = MESSAGE_LENGTH/8;
+    int i = 0;
+    int plainmsg_length = strlen(full_message);
+    char message_block[block_length + 1];
+
+    while(i < plainmsg_length)
+    {   
+        for(int j = 0; j < block_length; j++)
+            message_block[j] = full_message[i + j]; 
+
+        i += block_length;
+        mpz_t cipher;
+        mpz_init2(cipher, DEFAULT_SIZE);
+        one_block_encryption(pub_sequence, message_block, cipher);
+        
+        gmp_fprintf(output_file,"%Zd ", cipher);
+        mpz_clear(cipher);
+    }
+    fclose(output_file);
+}
+
+void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r)
+{
+    FILE *cipher_file = NULL;
+    cipher_file = fopen(filename, "r");
+    if(cipher_file == NULL)
+        errx(EXIT_FAILURE, "error: cipher_file cannot be opened");
+    
+    FILE *output_file = NULL;
+    output_file = fopen("decipher.txt", "w");
+    if(output_file == NULL)
+        errx(EXIT_FAILURE, "error: output_file cannot be opened");
+
+    mpz_t z;  
+    mpz_init2(z, DEFAULT_SIZE);  
+
+    while (gmp_fscanf(cipher_file, "%Zd ", z) != EOF)
+    {
+        unsigned char res[MESSAGE_LENGTH/8 + 1];
+        decryption(z, sequence, q, r, res);
+        fprintf(output_file,"%s", res);
+    }
+
+    mpz_clear(z);
+    fclose(cipher_file);
+    fclose(output_file);
 }

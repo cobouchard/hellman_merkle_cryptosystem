@@ -14,6 +14,18 @@ https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
 http://tcs.rwth-aachen.de/lehre/Crypto/SS2013/downloads/vortraege/merkle-hellman-knapsack-based-public-key-method.pdf
 
 
-2206511163331085261895153558966167933
-2619191582897042769777273179205205741
 
+    /*
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+        gmp_printf ("%Zd/ ", sequence[i]);
+    gmp_printf("\nq = %Zd\n", q);
+    */
+
+    // r and public sequence computation 
+
+    /*
+    printf("-------------------------------------\npublic key:\n");
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+        gmp_printf ("%Zd/ ", pub_sequence[i]);
+    printf("\n-------------------------------------\n");
+    */
