@@ -94,23 +94,49 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
                 mpf_set_d(columns[i]->coefficients[coeff], 0);
             }
 
-            gmp_printf("%. *Ff ", 3, columns[i]->coefficients[coeff]);
         }
-        printf("\n");
     }
-
-    printf("\n");
-    printf("\n");
-    printf("\n");
 
     lll(columns, key_size+1);
 
-    for(int i=0; i!=key_size+1; i++){
-        for(int j=0; j!=key_size+1; j++){
-            gmp_printf("%. *Ff ", 3, columns[j]->coefficients[i]);
+//    for(int i=0; i!=key_size+1; i++){
+//        for(int j=0; j!=key_size+1; j++){
+//            gmp_printf("%. *Ff ", 3, columns[i]->coefficients[j]);
+//        }
+//        printf("\n");
+//    }
+
+    //we now have to find the correct column giving the message
+    int correct_column=-1;
+    for(int column=0; column!=key_size+1; column++){
+        int correct=1;
+        for(int i=0; i!=key_size+1; i++){
+            int temp = mpf_get_d(columns[column]->coefficients[i]);
+            if(temp!=0 && temp!=1){
+                correct=0;
+                break;
+            }
         }
-        printf("\n");
+        if(correct){
+            correct_column=column;
+            break;
+        }
     }
+
+    if(correct_column==-1){
+        errx(EXIT_FAILURE, "Couldn't find a column corresponding to the message in attack()\n");
+    }
+
+    //we calculate the message
+    for(int i=0; i!=key_size; i++){
+        if(mpf_cmp_d(columns[correct_column]->coefficients[i],1)==0){
+            mpz_t temp; mpz_init(temp);
+            mpz_setbit(temp, key_size-i-1);
+            mpz_add(message, message, temp);
+        }
+    }
+
+
     //penser à clear
 }
 
@@ -134,6 +160,8 @@ void test_attack(){
 
     mpz_t result; mpz_init(result);
     attack(public_key, 9, cipher, result);
+
+    gmp_printf("%Zd \n", result);
 
     for(int i=0; i!=9 ; i++)
         mpz_clear(public_key[i]);
