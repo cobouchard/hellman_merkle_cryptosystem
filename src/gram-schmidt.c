@@ -4,19 +4,19 @@
 #include "../include/gram-schmidt.h"
 #include "../include/main.h"
 
-void nearest_integer(mpf_t* floaty, mpz_t* result){
+void nearest_integer(mpf_t floaty, mpz_t result){
     mpf_t floor, sub, temp;
     mpf_init(floor); mpf_init(sub); mpf_init(temp);
 
-    mpf_floor(floor, *floaty);
-    mpf_sub(sub, *floaty, floor);
+    mpf_floor(floor, floaty);
+    mpf_sub(sub, floaty, floor);
 
     if(mpf_cmp_d(sub, 0.5)>0){ //sub>0.5
-        mpf_ceil(temp, *floaty);
-        mpz_set_f(*result, temp);
+        mpf_ceil(temp, floaty);
+        mpz_set_f(result, temp);
     }
     else{
-        mpz_set_f(*result, floor);
+        mpz_set_f(result, floor);
     }
 
     mpf_clear(sub);
@@ -24,27 +24,27 @@ void nearest_integer(mpf_t* floaty, mpz_t* result){
     mpf_clear(temp);
 }
 
-void norm2(struct Vector* vector, mpf_t* result){
+void norm2(struct Vector* vector, mpf_t result){
     mpf_t temp;
     mpf_init(temp);
 
     for(int i=0; i!=BASE_SIZE; i++){
         mpf_pow_ui(temp, vector->coefficients[i], 2);
-        mpf_add(*result,*result,temp);
+        mpf_add(result,result,temp);
     }
 
-    mpf_sqrt(*result, *result);
+    mpf_sqrt(result, result);
 
     mpf_clear(temp);
 }
 
-void dot_product(struct Vector* a,struct Vector* b, mpf_t* result){
+void dot_product(struct Vector* a,struct Vector* b, mpf_t result){
     mpf_t temp;
     mpf_init(temp);
 
     for(int i=0; i!=BASE_SIZE; i++){
         mpf_mul(temp, a->coefficients[i], b->coefficients[i]);
-        mpf_add(*result, *result, temp);
+        mpf_add(result, result, temp);
     }
 
     mpf_clear(temp);
@@ -56,8 +56,8 @@ void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj){
     mpf_init(temp);
 
 
-    dot_product(v, u, &scalar);
-    dot_product(u, u, &temp);
+    dot_product(v, u, scalar);
+    dot_product(u, u, temp);
     mpf_div(scalar, scalar, temp);
 
 
@@ -69,14 +69,14 @@ void vector_projection(struct Vector* u, struct Vector* v, struct Vector* proj){
     mpf_clear(scalar);
 }
 
-void get_u_ij(struct Vector* b[], struct Vector* b_prime[], int i, int j, mpf_t* result){
+void get_u_ij(struct Vector* b[], struct Vector* b_prime[], int i, int j, mpf_t result){
     mpf_t top, bottom;
     mpf_init(top); mpf_init(bottom);
 
-    dot_product(b[i],b_prime[j],&top);
-    dot_product(b_prime[j], b_prime[j], &bottom);
+    dot_product(b[i],b_prime[j],top);
+    dot_product(b_prime[j], b_prime[j], bottom);
 
-    mpf_div(*result,top,bottom);
+    mpf_div(result,top,bottom);
 
     mpf_clear(top); mpf_clear(bottom);
 }
@@ -113,18 +113,20 @@ void lll(struct Vector* v[], int number_of_vectors){
     }
     gram_schmidt(v,u,number_of_vectors);
 
+
     mpf_t temp, temp2;
     mpf_init(temp); mpf_init(temp2);
 
 
-    for(int k=1; k<number_of_vectors; k++){
+    for(int k=1; k<number_of_vectors; ){
+
         for(int j=k-1; j>=0; j--){
-            get_u_ij(v,u,k,j,&temp);
+            get_u_ij(v,u,k,j,temp);
             mpf_abs(temp, temp);
 
             mpz_t converted_int;
             mpz_init (converted_int);
-            nearest_integer(&temp,&converted_int);
+            nearest_integer(temp,converted_int);
             mpf_set_z(temp2, converted_int);
             for(int i=0; i!=BASE_SIZE; i++){
                 mpf_mul(temp, v[j]->coefficients[i], temp2);
@@ -133,14 +135,13 @@ void lll(struct Vector* v[], int number_of_vectors){
             gram_schmidt(v,u,number_of_vectors);
 
         }
-
         mpf_t right_side, left_side;
         mpf_init(right_side); mpf_init(left_side);
 
-        dot_product(u[k],u[k],&left_side);
-        dot_product(u[k-1],u[k-1],&right_side);
+        dot_product(u[k],u[k],left_side);
+        dot_product(u[k-1],u[k-1],right_side);
 
-        get_u_ij(v,u,k,k-1,&temp);
+        get_u_ij(v,u,k,k-1,temp);
         mpf_pow_ui(temp, temp, 2);
         mpf_ui_sub(temp, DELTA, temp);
 
@@ -154,7 +155,7 @@ void lll(struct Vector* v[], int number_of_vectors){
                 mpf_swap(v[k]->coefficients[i], v[k-1]->coefficients[i]);
             }
             gram_schmidt(v,u,number_of_vectors);
-            k = (k > 1) ? k - 1 : 1;
+            k = ((k-1 > 2) ? k - 1 : 2)-1;
         }
 
         mpf_clear(left_side);
@@ -219,8 +220,10 @@ void test_gram_schmidt(){
     mpf_init(temp);
 
     lll(v,3);
-    for(int i=0; i!=BASE_SIZE; i++)
+    for(int i=0; i!=3; i++){
         print_vector(v[i]);
+    }
+
 
     clear_vector(&b1); clear_vector(&b2); clear_vector(&b3);
     clear_vector(&c1); clear_vector(&c2); clear_vector(&c3);
