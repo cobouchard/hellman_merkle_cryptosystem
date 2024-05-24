@@ -333,5 +333,9 @@ void one_block_attack(mpz_t cipher, mpz_t* pub_sequence, unsigned char* res){
     }
 
     convert_indexes(indexes, res);
+
     mpz_clear(temp);
+    for(int i=0; i!=MESSAGE_LENGTH; i++){
+        mpz_clear(public_key[i]);
+    }
 }
