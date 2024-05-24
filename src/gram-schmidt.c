@@ -1,7 +1,14 @@
 #include <gmp.h>
+
 #include "../include/gram-schmidt.h"
 #include "../include/main.h"
 #include "../include/attack.h"
+
+#include <stdlib.h>
+#include <err.h>
+
+#include "../include/cryptosystem.h"
+
 
 void nearest_integer(mpf_t floaty, mpz_t result){
     mpf_t floor, sub, temp;

@@ -1,83 +1,82 @@
 #include "main.h"
-
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
 #include "gram-schmidt.h"
-#include "attack.h"
+#include "cryptosystem.h"
 
-static gmp_randstate_t state;
-static bool randomized = false;
 
-/* initialize a super increasing sequence of n integers 
- * and return q an integer > sum of all elements of the sequence 
- * sequence must be initialized before */
-void super_increasing_sequence(mpz_t *sequence, mpz_t *res)
+static crypto_mode mode = UNINITIALIZED;
+
+int main(int argc, char *argv[])
 {
-    if (MESSAGE_LENGTH <= 0)
-        return ;
-    
-    mpz_set_ui(sequence[0], rand()% 10 + 1);
+    // private sequence
 
-    mpz_t sum;
-    mpz_t temp;
-    mpz_init_set(sum, sequence[0]);
-    mpz_init2(temp, 1024UL);
+    mpz_t sequence[MESSAGE_LENGTH], q, r, pub_sequence[MESSAGE_LENGTH];
+    /*initialisation(sequence, q, r, pub_sequence);
 
-    for (int i = 1; i < MESSAGE_LENGTH; i++)
-    {   
-        mpz_urandomm(temp, state, sequence[i - 1]);
-        mpz_add_ui(temp, temp, 1);          // urandomm generates from 0
-        mpz_add(sequence[i], sum, temp);
-        mpz_add(sum, sum, sequence[i]);
-    }
-
-    mpz_urandomm(temp, state, sum);
-    mpz_add((*res), temp, sum);
-
-    mpz_clears(temp, sum, NULL);
-    return;
-}
-
-/* finds a number < q coprime with q*/
-void find_coprime(mpz_t q, mpz_t res)
-{   
-    mpz_t gcd;
-    mpz_init(gcd);
-    mpz_urandomm(res, state, q);
-    mpz_gcd(gcd, q, res);
-
-    while (mpz_cmp_ui(gcd, 1) != 0)
+    int opt;
+    while ((opt = getopt(argc, argv, "c:d:")) != -1)
     {
-        mpz_urandomm(res, state, q);
-        mpz_gcd(gcd, q, res);
+        switch (opt)
+        {
+        case 'c':
+            if (mode != UNINITIALIZED)
+                errx(EXIT_FAILURE, "error: only one cryptography mode allowed.");
+            if (!optarg)
+                errx(EXIT_FAILURE, "error: encryption mode needs an argument.");
+            mode = ENCRYPTION;
+            break;
+
+        case 'd':
+            if (mode != UNINITIALIZED)
+                errx(EXIT_FAILURE, "error: only one cryptography mode allowed.");
+            if (!optarg)
+                errx(EXIT_FAILURE, "error: decryption mode needs an argument.");
+            mode = DECRYPTION;
+            break;
+
+        default:
+            errx(EXIT_FAILURE, "error: option %c not allowed.",opt);
+            break;
+        }
     }
 
-    mpz_clear(gcd);
-    return;
-}
+    char *message = (mode == ENCRYPTION)? argv[optind - 1]: "message plus long";
+    char *input_file = (mode == DECRYPTION)? argv[optind -1]: "cipher.txt";
 
-/* calculate the sequence B so that bi = r*ai % q 
- * sequence_b must be initialized before */
-void public_sequence(mpz_t *sequence_a, mpz_t *sequence_b, const mpz_t q, const mpz_t r)
-{
+    switch (mode)
+    {
+    case UNINITIALIZED:
+        printf("DEMO:\nm = \"message plus long\"\n");
+        ecb_encryption(pub_sequence, message);
+        ecb_decryption(sequence, input_file, q, r);
+        printf("results written in files \'cipher.txt\' and \'decipher.txt\'\n");
+        break;
+
+    case DECRYPTION:
+        ecb_decryption(sequence, "cipher.txt", q, r);
+        break;
+
+    case ENCRYPTION:
+        ecb_encryption(pub_sequence, message);
+        break;
+
+    default:
+        errx(EXIT_FAILURE, "error: mode has wrong value");
+        break;
+    }
+
+*/
+    read_private_key("private_key", sequence, q, r);
+    read_public_key("public_key", pub_sequence);
+
+    mpz_clears(q, r, NULL);
     for (int i = 0; i < MESSAGE_LENGTH; i++)
-    {
-        mpz_mul(sequence_b[i], sequence_a[i], r);
-        mpz_mod(sequence_b[i], sequence_b[i], q);
-    }
-    return;
+        mpz_clears(sequence[i], pub_sequence[i], NULL);
+
+    return 0;
+
+
 }
 
-void str_to_binary(char *message, char* binary)
-{
-    int len = strlen(message);
-    for(int i = 0; i < MESSAGE_LENGTH; i++)
-    {   
-        if (i/8 < len)
-            binary[i] = ((message[i / 8] >> (i % 8)) & 1) ? '1' : '0';
-        else
-            binary[i] = '0';
-    }
-}
 
 /* ciphers the message, cipher must be initialized to 1 */
 void encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
@@ -91,8 +90,3 @@ void encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
 }
 
 
-int main(int argc, char *argv[])
-{
-    //test_gram_schmidt();
-    test_attack();
-}

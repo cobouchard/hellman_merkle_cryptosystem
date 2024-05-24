@@ -1,20 +1,20 @@
 #ifndef HME_H
 #define HME_H
 
-#include <math.h>
-#include <stdbool.h>
+#include <getopt.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
 #include <string.h>
 #include <gmp.h>
 
 #define MESSAGE_LENGTH 100
 #define DEFAULT_SIZE 1024
 
-typedef unsigned long long bignumber;
+typedef enum {
+    DECRYPTION,
+    ENCRYPTION,
+    UNINITIALIZED
+}  crypto_mode;
+
 
 #endif /* HME_H*/

@@ -10,7 +10,9 @@ rebuild : clean all
 debug : CFLAGS += -g3
 debug: $(EXE)
 
-$(EXE) : main.o gram-schmidt.o attack.o
+$(EXE) : main.o gram-schmidt.o attack.o cryptosystem.o
+
+mhe : main.o cryptosystem.o attack.o gram-schmidt.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o  $@ $^ $(LDFLAGS)
 
 main.o : main.c ../include/main.h 
@@ -21,6 +23,11 @@ gram-schmidt.o : gram-schmidt.c ../include/gram-schmidt.h
 
 attack.o : attack.c ../include/attack.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+
+cryptosystem.o : cryptosystem.c ../include/cryptosystem.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+
+
 
 clean : 
 	@rm -rf *.o $(EXE)
