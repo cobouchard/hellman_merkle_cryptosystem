@@ -1,5 +1,12 @@
 *.o
 *.gch
+*.pdf
+*.PDF
+*.png
+
 mhe
 src/mhe
+
 .idea/*
+
+notes.txt
