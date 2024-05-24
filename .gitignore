@@ -5,3 +5,6 @@ src/mhe
 .idea/*
 Dockerfile
 docker_command.sh
+*.txt
+public_key
+private_key
