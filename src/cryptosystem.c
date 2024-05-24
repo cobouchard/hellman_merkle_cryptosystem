@@ -81,11 +81,6 @@ void public_sequence(mpz_t *sequence_a, mpz_t *sequence_b, const mpz_t q, const 
 
 void initialisation(mpz_t *sequence, mpz_t q, mpz_t r, mpz_t *pub_sequence)
 {
-    FILE *prv_output;
-    prv_output = fopen("private_key","w");
-    if(!prv_output)
-        errx(EXIT_FAILURE, "error: prv_output open");
-
     for (int i = 0; i < MESSAGE_LENGTH; i++)
         mpz_init2(sequence[i], DEFAULT_SIZE);
     
@@ -95,30 +90,10 @@ void initialisation(mpz_t *sequence, mpz_t q, mpz_t r, mpz_t *pub_sequence)
     mpz_init2(r, DEFAULT_SIZE);
     find_coprime(q, r);
 
-    fprintf(prv_output,"[");
-    for (int i = 0; i < MESSAGE_LENGTH - 1; i++)
-        gmp_fprintf(prv_output,"%Zd, ", sequence[i]);
-    gmp_fprintf(prv_output,"%Zd]\n", sequence[MESSAGE_LENGTH - 1]);
-
-    gmp_fprintf(prv_output,"q = %Zd\nr = %Zd", q, r);
-    fclose(prv_output);
-
     for (int i = 0; i < MESSAGE_LENGTH; i++)
         mpz_init2(pub_sequence[i], DEFAULT_SIZE);
 
     public_sequence(sequence, pub_sequence, q, r); 
-
-    FILE *pub_output;
-    pub_output = fopen("public_key","w");
-    if(!pub_output)
-        errx(EXIT_FAILURE, "error: pub_output open");
-
-    fprintf(pub_output,"[");
-    for (int i = 0; i < MESSAGE_LENGTH - 1; i++)
-        gmp_fprintf(pub_output,"%Zd, ", pub_sequence[i]);
-    gmp_fprintf(pub_output,"%Zd]", pub_sequence[MESSAGE_LENGTH - 1]);
-
-    fclose(pub_output);
 }
 
 void read_private_key(char *filename, mpz_t *sequence, mpz_t q, mpz_t r)
@@ -180,6 +155,38 @@ void read_public_key(char *filename, mpz_t *pub_sequence)
     fclose(key_file);
 }
     
+void store_private_key(char *filename, mpz_t *sequence, mpz_t q, mpz_t r)
+{
+    FILE *prv_output;
+    prv_output = fopen(filename,"a");
+    if(!prv_output)
+        errx(EXIT_FAILURE, "error: prv_output open");
+    
+    fprintf(prv_output,"[");
+    for (int i = 0; i < MESSAGE_LENGTH - 1; i++)
+        gmp_fprintf(prv_output,"%Zd, ", sequence[i]);
+    gmp_fprintf(prv_output,"%Zd]\n", sequence[MESSAGE_LENGTH - 1]);
+
+    gmp_fprintf(prv_output,"q = %Zd\nr = %Zd\n\n", q, r);
+    fclose(prv_output);
+}
+
+void store_public_key(char *filename, mpz_t *pub_sequence)
+{
+    FILE *pub_output;
+    pub_output = fopen(filename,"a");
+    if(!pub_output)
+        errx(EXIT_FAILURE, "error: pub_output open");
+
+    fprintf(pub_output,"[");
+    for (int i = 0; i < MESSAGE_LENGTH - 1; i++)
+        gmp_fprintf(pub_output,"%Zd, ", pub_sequence[i]);
+    gmp_fprintf(pub_output,"%Zd]\n\n", pub_sequence[MESSAGE_LENGTH - 1]);
+
+    fclose(pub_output);
+
+}
+
 /* cipers the message, cipher must be initialized */
 void one_block_encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
 {

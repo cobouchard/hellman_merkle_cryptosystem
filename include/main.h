@@ -7,14 +7,17 @@
 #include <string.h>
 #include <gmp.h>
 
-#define MESSAGE_LENGTH 100
-#define DEFAULT_SIZE 1024
-
 typedef enum {
     DECRYPTION,
     ENCRYPTION,
+    GENERATION,
     UNINITIALIZED
 }  crypto_mode;
 
+#define DEFAULT_MESSAGE "message plus long"
+#define CIPHERTXT "cipher.txt"
+#define DECIPHERTXT "decipher.txt"
+#define PRIVATEKEY "private_key"
+#define PUBLICKEY "public_key"
 
 #endif /* HME_H*/

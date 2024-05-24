@@ -7,13 +7,12 @@ static crypto_mode mode = UNINITIALIZED;
 
 int main(int argc, char *argv[])
 {
-    // private sequence
-
     mpz_t sequence[MESSAGE_LENGTH], q, r, pub_sequence[MESSAGE_LENGTH];
-    /*initialisation(sequence, q, r, pub_sequence);
+    //read_private_key("private_key", sequence, q, r);
+    //read_public_key("public_key", pub_sequence);
 
     int opt;
-    while ((opt = getopt(argc, argv, "c:d:")) != -1)
+    while ((opt = getopt(argc, argv, "c:d:ga")) != -1)
     {
         switch (opt)
         {
@@ -33,14 +32,24 @@ int main(int argc, char *argv[])
             mode = DECRYPTION;
             break;
 
+        case 'g':
+            if (mode != UNINITIALIZED)
+                errx(EXIT_FAILURE, "error: only one cryptography mode allowed.");
+            mode = GENERATION;
+            break;
+
         default:
             errx(EXIT_FAILURE, "error: option %c not allowed.",opt);
             break;
         }
     }
 
-    char *message = (mode == ENCRYPTION)? argv[optind - 1]: "message plus long";
-    char *input_file = (mode == DECRYPTION)? argv[optind -1]: "cipher.txt";
+    char *message = (mode == ENCRYPTION)? argv[optind - 1]: DEFAULT_MESSAGE;
+    char *input_file = (mode == DECRYPTION)? argv[optind -1]: CIPHERTXT;
+
+    optind++;
+        read_private_key(PRIVATEKEY, sequence, q, r);
+        read_public_key(PUBLICKEY, pub_sequence);
 
     switch (mode)
     {
@@ -48,25 +57,42 @@ int main(int argc, char *argv[])
         printf("DEMO:\nm = \"message plus long\"\n");
         ecb_encryption(pub_sequence, message);
         ecb_decryption(sequence, input_file, q, r);
-        printf("results written in files \'cipher.txt\' and \'decipher.txt\'\n");
+        printf("results written in files \'%s\' and \'%s\'\n", CIPHERTXT, DECIPHERTXT);
         break;
 
     case DECRYPTION:
-        ecb_decryption(sequence, "cipher.txt", q, r);
+        if(optind <= argc)
+            read_private_key(argv[optind - 1], sequence, q, r);
+        else
+        {
+            printf("%s not given, generating one...\n", PRIVATEKEY);
+            initialisation(sequence, q, r, pub_sequence);
+        }
+        ecb_decryption(sequence, CIPHERTXT, q, r);
         break;
 
     case ENCRYPTION:
+        if(optind <= argc)
+            read_public_key(argv[optind - 1], pub_sequence);
+        else
+        {
+            printf("%s not given, generating one...\n", PUBLICKEY);
+            initialisation(sequence, q, r, pub_sequence);
+        }
         ecb_encryption(pub_sequence, message);
+        break;
+        
+    case GENERATION:
+        initialisation(sequence, q, r, pub_sequence);
+        store_private_key(PRIVATEKEY, sequence, q, r);
+        store_public_key(PUBLICKEY, pub_sequence);
         break;
 
     default:
         errx(EXIT_FAILURE, "error: mode has wrong value");
         break;
-    }
+    }   
 
-*/
-    read_private_key("private_key", sequence, q, r);
-    read_public_key("public_key", pub_sequence);
 
     mpz_clears(q, r, NULL);
     for (int i = 0; i < MESSAGE_LENGTH; i++)
@@ -77,16 +103,5 @@ int main(int argc, char *argv[])
 
 }
 
-
-/* ciphers the message, cipher must be initialized to 1 */
-void encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
-{
-    int len = MIN(strlen(message), MESSAGE_LENGTH);
-    for(int i = 0; i < len; i++)
-    {
-        if ((message[i / 8] >> (i % 8)) & 1)
-            mpz_mul(cipher, cipher, pub_sequence[i]);
-    }
-}
 
 
