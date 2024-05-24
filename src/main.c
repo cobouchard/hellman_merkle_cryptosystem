@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
     char *message = (mode == ENCRYPTION)? argv[optind - 1]: "message plus long";
     char *input_file = (mode == DECRYPTION)? argv[optind -1]: "cipher.txt";
-
+    
     switch (mode)
     {
     case UNINITIALIZED:
@@ -62,11 +62,13 @@ int main(int argc, char *argv[])
         errx(EXIT_FAILURE, "error: mode has wrong value");
         break;
     }
-    
+
+    mpz_t pub_sequence2[MESSAGE_LENGTH];
+    read_public_key("public_key", pub_sequence2);
 
     mpz_clears(q, r, NULL);
     for (int i = 0; i < MESSAGE_LENGTH; i++)
-        mpz_clears(sequence[i], pub_sequence[i], NULL);   
+        mpz_clears(sequence[i], pub_sequence[i], pub_sequence2[i], NULL);   
     
     return 0;
 

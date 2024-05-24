@@ -94,8 +94,49 @@ void initialisation(mpz_t *sequence, mpz_t q, mpz_t r, mpz_t *pub_sequence)
     for (int i = 0; i < MESSAGE_LENGTH; i++)
         mpz_init2(pub_sequence[i], DEFAULT_SIZE);
 
-     public_sequence(sequence, pub_sequence, q, r); 
+    public_sequence(sequence, pub_sequence, q, r); 
+
+    FILE *pub_output;
+    pub_output = fopen("public_key","w");
+    if(!pub_output)
+        errx(EXIT_FAILURE, "error: pub_output open");
+
+    fprintf(pub_output,"[");
+    for (int i = 0; i < MESSAGE_LENGTH - 1; i++)
+        gmp_fprintf(pub_output,"%Zd, ", pub_sequence[i]);
+    gmp_fprintf(pub_output,"%Zd]", pub_sequence[MESSAGE_LENGTH - 1]);
+
+    fclose(pub_output);
 }
+
+/* IMPORTANT : key_file MUST be formatted [key1, key2, ..., keyN] */
+void read_public_key(char *filename, mpz_t *pub_sequence)
+{
+    FILE *key_file = NULL;
+    key_file = fopen(filename, "r");
+    if(key_file == NULL)
+        errx(EXIT_FAILURE, "error: public_key cannot be opened");
+    
+    for (int i = 0; i < MESSAGE_LENGTH; i++)
+        mpz_init2(pub_sequence[i], DEFAULT_SIZE);
+        
+    mpz_t z;  
+    mpz_init2(z, DEFAULT_SIZE);    
+
+    fscanf(key_file,"[");
+    char buf[50];
+    int i = 0;
+
+    while ((gmp_fscanf(key_file, "%Zd%[^ ]", z, buf) != EOF) && (i < MESSAGE_LENGTH))
+    {
+        mpz_set(pub_sequence[i], z);
+        i++;
+    }
+
+    mpz_clear(z);
+    fclose(key_file);
+}
+    
 
 /* cipers the message, cipher must be initialized */
 void one_block_encryption(mpz_t *pub_sequence, char *message, mpz_t cipher)
