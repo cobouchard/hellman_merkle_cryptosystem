@@ -251,7 +251,7 @@ void one_block_decryption(mpz_t cipher, mpz_t *sequence, const mpz_t q, const mp
     convert_indexes(indexes, res);
 }
 
-void ecb_encryption(mpz_t *pub_sequence, char *full_message)
+void ecb_string_encryption(mpz_t *pub_sequence, char *full_message)
 {
     FILE *output_file = NULL;
     output_file = fopen("cipher.txt", "w");
@@ -272,11 +272,49 @@ void ecb_encryption(mpz_t *pub_sequence, char *full_message)
         mpz_t cipher;
         mpz_init2(cipher, DEFAULT_SIZE);
         one_block_encryption(pub_sequence, message_block, cipher);
-        
         gmp_fprintf(output_file,"%Zd ", cipher);
         mpz_clear(cipher);
     }
     fclose(output_file);
+}
+
+void ecb_file_encryption(mpz_t *pub_sequence, char *filename)
+{
+    FILE *message_file = NULL;
+    message_file = fopen(filename, "r");
+    if(message_file == NULL)
+        errx(EXIT_FAILURE, "error: message_file cannot be opened");
+
+    FILE *output_file = NULL;
+    output_file = fopen("cipher.txt", "w");
+    if(output_file == NULL)
+        errx(EXIT_FAILURE, "error: output_file cannot be opened");
+    
+    int block_length = MESSAGE_LENGTH/8;
+    char message_block[block_length + 1];
+    char current_char = fgetc(message_file);
+    while(current_char >= 0)
+    {   
+        int i = 0;
+        while ((current_char >= 0) && (i < block_length))
+        {
+            message_block[i] = current_char;
+            current_char = fgetc(message_file);
+            i++;
+        }
+        if (i < block_length)        // last block
+            message_block[block_length - i] = 0;
+
+        mpz_t cipher;
+        mpz_init2(cipher, DEFAULT_SIZE);
+        one_block_encryption(pub_sequence, message_block, cipher);
+        gmp_fprintf(output_file,"%Zd ", cipher);
+        mpz_clear(cipher);
+    
+    }
+    
+    fclose(output_file);
+    fclose(message_file);
 }
 
 void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r, crypto_mode mode, mpz_t *pub_sequence)
