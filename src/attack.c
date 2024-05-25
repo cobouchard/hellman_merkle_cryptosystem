@@ -103,14 +103,14 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
     }
     mpz_clear(temp);
 
-    FILE *matrice_file =fopen("matrice_lll.txt", "w");
-    if(!matrice_file)
+    FILE *matrice_file =fopen("matrice_lll.txt", "a");
+    if(!fopen)
         exit;
     
     for (int i = 0; i < key_size + 1; i++)
     {
         fprintf(matrice_file, "[ ");
-        print_vector_file(columns[i], key_size + 1, matrice_file);
+        print_vector_file(columns[i], key_size + 1, matrice_file    );
         fprintf(matrice_file, " ]\n ");
     }
     lll(columns, key_size+1);
@@ -121,6 +121,7 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
         print_vector_file(columns[i], key_size + 1, matrice_file);
         fprintf(matrice_file, " ]\n ");
     }
+    fprintf(matrice_file,"\n\n");
     fclose(matrice_file);
 
     //we now have to find the correct column giving the message
@@ -140,6 +141,7 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
         }
     }
 
+    printf("correct_column = %d",correct_column);
     if(correct_column==-1){
         errx(EXIT_FAILURE, "Couldn't find a column corresponding to the message in attack()\n");
     }
@@ -152,6 +154,7 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
             mpz_add(message, message, temp);
         }
     }
+    gmp_printf("m = %Zd", message);
 
     for(int i=0; i!=key_size+1; i++){
         clear_vector(columns[i], key_size+1);

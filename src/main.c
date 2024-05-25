@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
         errx(EXIT_FAILURE, "error: mode has wrong value");
         break;
     }   
-    
+
     if(seq)
         mpz_clears(q, r, NULL);
     if(pseq)
