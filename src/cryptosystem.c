@@ -217,9 +217,9 @@ void convert_indexes(int indexes[], unsigned char* res){
     int pow;
     int temp_int;
     for (int i = 0; i < MESSAGE_LENGTH; i++)
-    {
+    {   
         if (i % 8 == 0)
-        {
+        {   
             pow = 1;
             temp_int = 0;
         }
@@ -229,7 +229,6 @@ void convert_indexes(int indexes[], unsigned char* res){
 
         if ((i + 1) % 8 == 0)
             res[i/8] = temp_int;
-
     }
 }
 
@@ -305,8 +304,8 @@ void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r, crypto_mo
             one_block_decryption(z, sequence, q, r, res);
 
         fprintf(output_file,"%s", res);
-        
     }
+
     mpz_clear(z);
     fclose(cipher_file);
     fclose(output_file);

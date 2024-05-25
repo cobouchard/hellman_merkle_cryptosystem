@@ -102,6 +102,7 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
         }
     }
     mpz_clear(temp);
+
     lll(columns, key_size+1);
 
     //we now have to find the correct column giving the message
@@ -129,7 +130,7 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
     for(int i=0; i!=key_size; i++){
         if(mpf_cmp_d(columns[correct_column]->coefficients[i],1)==0){
             mpz_t temp; mpz_init(temp);
-            mpz_setbit(temp, key_size-i-1);
+            mpz_setbit(temp, i);
             mpz_add(message, message, temp);
         }
     }

@@ -17,7 +17,7 @@ typedef enum {
     UNINITIALIZED
 }  crypto_mode;
 
-#define MESSAGE_LENGTH 8 // or 104
+#define MESSAGE_LENGTH 10 // or 104
 #define DEFAULT_SIZE 1024UL
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
