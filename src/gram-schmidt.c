@@ -119,9 +119,19 @@ void clear_vector(struct Vector* v, int size){
 void print_vector(struct Vector* vector, int size){
     for(int i=0; i!=size; i++){
         if(i!=size-1)
-            gmp_printf("%. *Ff,", 10, vector->coefficients[i]);
+            gmp_printf("%. *Ff,", 3, vector->coefficients[i]);
         else
-            gmp_printf("%.* Ff\n", 10, vector->coefficients[i]);
+            gmp_printf("%.* Ff\n", 3, vector->coefficients[i]);
+    }
+}
+
+void print_vector_file(struct Vector* vector, int size, FILE* fp)
+{
+    for(int i=0; i!=size; i++){
+        if(i!=size-1)
+            gmp_fprintf(fp,"%. *Ff,", 3, vector->coefficients[i]);
+        else
+            gmp_fprintf(fp,"%.* Ff", 3, vector->coefficients[i]);
     }
 }
 

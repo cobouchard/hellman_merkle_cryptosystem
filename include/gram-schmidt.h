@@ -4,7 +4,7 @@
 #include <gmp.h>
 #include "cryptosystem.h"
 
-#define DELTA 0.75
+#define DELTA 0.90
 
 struct Vector{
     mpf_t coefficients[MESSAGE_LENGTH + 1];
@@ -14,6 +14,7 @@ void test_gram_schmidt();
 void init_vector(struct Vector* vector, int size);
 void clear_vector(struct Vector* v, int size);
 void print_vector(struct Vector* vector, int size);
+void print_vector_file(struct Vector* vector, int size, FILE* fp);
 
 
 void nearest_integer(mpf_t floaty, mpz_t result);

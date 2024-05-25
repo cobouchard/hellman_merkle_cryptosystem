@@ -103,7 +103,25 @@ void attack(mpz_t public_key[], int key_size, mpz_t cipher, mpz_t message){
     }
     mpz_clear(temp);
 
+    FILE *matrice_file =fopen("matrice_lll.txt", "w");
+    if(!matrice_file)
+        exit;
+    
+    for (int i = 0; i < key_size + 1; i++)
+    {
+        fprintf(matrice_file, "[ ");
+        print_vector_file(columns[i], key_size + 1, matrice_file);
+        fprintf(matrice_file, " ]\n ");
+    }
     lll(columns, key_size+1);
+    fprintf(matrice_file,"\n");
+    for (int i = 0; i < key_size + 1; i++)
+    {
+        fprintf(matrice_file, "[ ");
+        print_vector_file(columns[i], key_size + 1, matrice_file);
+        fprintf(matrice_file, " ]\n ");
+    }
+    fclose(matrice_file);
 
     //we now have to find the correct column giving the message
     int correct_column=-1;
