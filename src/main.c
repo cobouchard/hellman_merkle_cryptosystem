@@ -52,9 +52,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    char *message = (mode == ENCRYPTION)? argv[optind - 1]: DEFAULT_MESSAGE;
     char *input_file = (mode == DECRYPTION)? argv[optind -1]: CIPHERTXT;
-
     optind++;
 
     switch (mode)
@@ -65,8 +63,9 @@ int main(int argc, char *argv[])
         pseq = true;
         read_private_key(PRIVATEKEY, sequence, q, r);
         seq = true;
-        printf("DEMO:\nm = \"message plus long\"\n");
-        ecb_encryption(pub_sequence, message);
+        char *message = DEFAULT_MESSAGE;
+        printf("DEMO:\nm = \"%s\"\n", DEFAULT_MESSAGE);
+        ecb_string_encryption(pub_sequence, message);
         ecb_decryption(sequence, input_file, q, r, mode, pub_sequence);
         printf("results written in files \'%s\' and \'%s\'\n", CIPHERTXT, DECIPHERTXT);
         break;
@@ -106,7 +105,8 @@ int main(int argc, char *argv[])
             pseq = true;
             seq = true;
         }
-        ecb_encryption(pub_sequence, message);
+        char *message_file = argv[optind - 2];
+        ecb_file_encryption(pub_sequence, message_file);
         break;
 
     case GENERATION:
