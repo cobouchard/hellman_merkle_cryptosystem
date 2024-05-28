@@ -2,6 +2,7 @@
 
 import json
 import socket
+import os
 from subprocess import call
 
 charlie_addr = 0
@@ -34,6 +35,7 @@ with open(msg_file, 'w') as file:
 print("Ciphering data...")
 call(["./../mhe", "-c", "msg.txt", "public_key"]) 
 
+os.remove(msg_file)
 
 #open the result of cipher and send it
 data=None

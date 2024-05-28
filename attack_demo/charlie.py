@@ -10,6 +10,8 @@ Charlie will attack the message and find what Alice sent to Bob using Merkle-Hel
 import json
 import socket
 import threading
+import time
+import os
 from subprocess import call
 
 alice_addr = 0
@@ -39,13 +41,23 @@ with open("info.json") as json_file:
 		raise e
 	
 
+temp_file="temp_charlie"
 def attack(data):
-	with open('temp_charlie', 'wb') as file:
+	with open(temp_file, 'wb') as file:
 		file.write(data)
 
-	call(["./../mhe", "-a", "temp_charlie", "public_key"]) 
-	print("Attack")
-	print(data)
+	time.sleep(1)
+
+	#attack of the ciphered message
+	call(["./../mhe", "-a", "public_key", temp_file]) 
+	
+	#removing temporary file
+	os.remove(temp_file)
+
+	#reading the result
+	with open("decipher.txt", 'r') as file:
+		print("Here was the message of Alice :")
+		print(file.read())
 	
 
 #starting an udp server to communicate
