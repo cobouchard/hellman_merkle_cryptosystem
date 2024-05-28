@@ -52,30 +52,40 @@ int main(int argc, char *argv[])
         }
     }
 
-    char *message = (mode == ENCRYPTION)? argv[optind - 1]: DEFAULT_MESSAGE;
     char *input_file = (mode == DECRYPTION)? argv[optind -1]: CIPHERTXT;
-
     optind++;
 
     switch (mode)
     {
     case UNINITIALIZED:
-        //initialisation(sequence, q, r, pub_sequence);
-        read_public_key(PUBLICKEY, pub_sequence); 
+        FILE *fp = fopen(PUBLICKEY, "r");
+        if(fp == NULL)
+            initialisation(sequence, q, r, pub_sequence);
+        else
+        {
+            fclose(fp);
+            read_public_key(PUBLICKEY, pub_sequence); 
+            read_private_key(PRIVATEKEY, sequence, q, r);
+        }
         pseq = true;
-        read_private_key(PRIVATEKEY, sequence, q, r);
         seq = true;
-        printf("DEMO:\nm = \"message plus long\"\n");
-        ecb_encryption(pub_sequence, message);
+        char *message = DEFAULT_MESSAGE;
+        printf("DEMO:\nm = \"%s\"\n", DEFAULT_MESSAGE);
+        ecb_string_encryption(pub_sequence, message);
         ecb_decryption(sequence, input_file, q, r, mode, pub_sequence);
         printf("results written in files \'%s\' and \'%s\'\n", CIPHERTXT, DECIPHERTXT);
         break;
 
     case ATTACK:
-        read_public_key(PUBLICKEY, pub_sequence);
-        pseq = true;
+        if (optind <= argc)
+        {
+            read_public_key(argv[optind - 1], pub_sequence);
+            pseq = true;
+        }
+        else   
+            errx(EXIT_FAILURE, "error: cannot attack without the public key");
+
         ecb_decryption(sequence, CIPHERTXT, q, r, mode, pub_sequence);
-        
         break;
     
     case DECRYPTION:
@@ -85,15 +95,9 @@ int main(int argc, char *argv[])
             seq = true;
         }
         else
-        {
-            printf("%s not given, generating one...\n", PRIVATEKEY);
-            initialisation(sequence, q, r, pub_sequence);
-            pseq = true;
-            seq = true;
-        }
+            errx(EXIT_FAILURE, "error: cannot decipher without the private key");
 
         ecb_decryption(sequence, CIPHERTXT, q, r, mode, pub_sequence);
-
         break;
 
     case ENCRYPTION:
@@ -106,7 +110,8 @@ int main(int argc, char *argv[])
             pseq = true;
             seq = true;
         }
-        ecb_encryption(pub_sequence, message);
+        char *message_file = argv[optind - 2];
+        ecb_file_encryption(pub_sequence, message_file);
         break;
 
     case GENERATION:

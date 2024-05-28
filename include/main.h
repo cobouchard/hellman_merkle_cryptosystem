@@ -7,7 +7,7 @@
 #include <string.h>
 #include <gmp.h>
 
-#define DEFAULT_MESSAGE "message plus long"
+#define DEFAULT_MESSAGE "message beaucoup beaucoup beaucoup beaucoup beaucoup beaucoup beaucoup plus long"
 #define CIPHERTXT "cipher.txt"
 #define DECIPHERTXT "decipher.txt"
 #define PRIVATEKEY "private_key"

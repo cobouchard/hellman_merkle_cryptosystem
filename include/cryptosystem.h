@@ -37,7 +37,8 @@ void convert_indexes(int* indexes, unsigned char* res);
 void one_block_decryption(mpz_t cipher, mpz_t *sequence, const mpz_t q, const mpz_t r, unsigned char *res);
 void one_block_attack(mpz_t cipher, mpz_t* pub_sequence, unsigned char* res);
 
-void ecb_encryption(mpz_t *pub_sequence, char *full_message);
+void ecb_string_encryption(mpz_t *pub_sequence, char *full_message);
+void ecb_file_encryption(mpz_t *pub_sequence, char *filename);
 void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r, crypto_mode mode, mpz_t *pub_sequence);
 
 #endif /* CRYPTOSYSTEM_H */
