@@ -46,7 +46,7 @@ def attack(data):
 	with open(temp_file, 'wb') as file:
 		file.write(data)
 
-	time.sleep(1)
+	time.sleep(2)
 
 	#attack of the ciphered message
 	call(["./../mhe", "-a", "public_key", temp_file]) 
@@ -66,6 +66,8 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(charlie_addr)
 data = None
 
+print("Hi, I'm Charlie. I will transfer every message from Alice to Bob. I will also attack their message using Bob's public key")
+
 while True:
 	data, addr_client = sock.recvfrom(1024)
 	if data!=None:
@@ -73,9 +75,9 @@ while True:
 		if(addr_client==alice_addr):
 			print("Forwarding message to Bob")
 			sock.sendto(data, bob_addr)
-		elif(addr_client==bob_addr):
-			print("Forwarding message to Alice")
-			sock.sendto(data, alice_addr)
+		else:
+			print("Incorrect sender")
+
 
 		#but we also try do decipher it
 		thread = threading.Thread(target=attack, args=(data,))
