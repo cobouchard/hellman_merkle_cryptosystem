@@ -248,6 +248,7 @@ void one_block_decryption(mpz_t cipher, mpz_t *sequence, const mpz_t q, const mp
         indexes[i] = 0;
     subset_sum_solver(c, indexes, sequence);
 
+
     convert_indexes(indexes, res);
 }
 
@@ -350,24 +351,20 @@ void ecb_decryption(mpz_t *sequence, char *filename, mpz_t q, mpz_t r, crypto_mo
 }
 
 void one_block_attack(mpz_t cipher, mpz_t* pub_sequence, unsigned char* res){
+    
     mpz_t public_key[MESSAGE_LENGTH];
     for(int i=0; i!=MESSAGE_LENGTH; i++){
         mpz_init(public_key[i]);
         mpz_set(public_key[i], pub_sequence[i]);
     }
-
     
     mpz_t temp; mpz_init(temp);
     attack(public_key, MESSAGE_LENGTH, cipher, temp);
     int indexes[MESSAGE_LENGTH];
     for(int i=0; i!=MESSAGE_LENGTH; i++){
-        
-        if(mpz_tstbit(temp,i))
-            indexes[i]=1;
-        else
-            indexes[i]=0;
+        indexes[i] = mpz_tstbit(temp,i);
     }
-    
+
     convert_indexes(indexes, res);
 
     mpz_clear(temp);

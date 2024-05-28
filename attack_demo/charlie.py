@@ -40,9 +40,12 @@ with open("info.json") as json_file:
 	
 
 def attack(data):
+	with open('temp_charlie', 'wb') as file:
+		file.write(data)
+
+	call(["./../mhe", "-a", "temp_charlie", "public_key"]) 
 	print("Attack")
 	print(data)
-	#call(None) #this should call the compiled C to decipher
 	
 
 #starting an udp server to communicate
@@ -54,8 +57,6 @@ data = None
 while True:
 	data, addr_client = sock.recvfrom(1024)
 	if data!=None:
-		print(addr_client)
-		
 		#we send the data to Bob/Alice as expected
 		if(addr_client==alice_addr):
 			print("Forwarding message to Bob")
