@@ -34,3 +34,7 @@ trop bien pour l'attaque
     printf("\n-------------------------------------\n");
     */
 >>>>>>> 8b29f200b5af3e46e59b0c12699b83ab55000c2a
+
+
+https://crypto.stackexchange.com/questions/39532/why-is-the-lov%C3%A1sz-condition-used-in-the-lll-algorithm
+bonne explication
