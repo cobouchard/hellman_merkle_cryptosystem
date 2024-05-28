@@ -12,3 +12,7 @@ src/mhe
 
 cipher.txt
 decipher.txt
+
+attack_demo/msg.txt
+attack_demo/public_key
+attack_demo/private_key

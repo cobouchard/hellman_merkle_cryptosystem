@@ -20,6 +20,9 @@ with open("info.json") as json_file:
 		print("Couldn't open \"info.json\"")
 		raise e
 
+#Bob generates public and private keys
+call(["./../mhe -g"]) 
+
 #Bob waits for Alice message
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(bob_addr)

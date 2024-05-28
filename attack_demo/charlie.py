@@ -42,7 +42,7 @@ with open("info.json") as json_file:
 def attack(data):
 	print("Attack")
 	print(data)
-	call(None) #this should call the compiled C to decipher
+	#call(None) #this should call the compiled C to decipher
 	
 
 #starting an udp server to communicate
@@ -54,6 +54,7 @@ data = None
 while True:
 	data, addr_client = sock.recvfrom(1024)
 	if data!=None:
+		print(addr_client)
 		
 		#we send the data to Bob/Alice as expected
 		if(addr_client==alice_addr):
@@ -61,7 +62,7 @@ while True:
 			sock.sendto(data, bob_addr)
 		elif(addr_client==bob_addr):
 			print("Forwarding message to Alice")
-		 	sock.sendto(data, alice_addr)
+			sock.sendto(data, alice_addr)
 
 		#but we also try do decipher it
 		thread = threading.Thread(target=attack, args=(data,))
