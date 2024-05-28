@@ -12,6 +12,7 @@ import socket
 import threading
 import time
 import os
+import random
 from subprocess import call
 
 alice_addr = 0
@@ -41,8 +42,9 @@ with open("info.json") as json_file:
 		raise e
 	
 
-temp_file="temp_charlie"
 def attack(data):
+	temp_file="temp_charlie" + str(random.randint(0,999))
+
 	with open(temp_file, 'wb') as file:
 		file.write(data)
 

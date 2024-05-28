@@ -27,6 +27,7 @@ with open("info.json") as json_file:
 
 print("Hi, I'm Alice. Let's send a message to Bob !")
 user_input = input("Enter message: ")
+	
 
 msg_file = "msg.txt"
 with open(msg_file, 'w') as file:
